@@ -47,11 +47,8 @@ export function AuthPage({ isSignIn }: { isSignIn: boolean }) {
           delete newFieldErrors.password;
         }
       }
-    } catch (err: any) {
-      if (err.errors && err.errors[0]) {
-        newFieldErrors[name as keyof typeof newFieldErrors] =
-          err.errors[0].message;
-      }
+    } catch (err) {
+      console.log(err);
     }
 
     setFieldErrors(newFieldErrors);
@@ -121,24 +118,8 @@ export function AuthPage({ isSignIn }: { isSignIn: boolean }) {
         setForm({ name: "", email: "", password: "" });
         setSuccess(false);
       }, 2000);
-    } catch (err: any) {
-      if (err.errors) {
-        const newFieldErrors: typeof fieldErrors = {};
-        err.errors.forEach((error: any) => {
-          const field = error.path[0] as string;
-          if (
-            field &&
-            (field === "name" || field === "email" || field === "password")
-          ) {
-            newFieldErrors[field as keyof typeof newFieldErrors] =
-              error.message;
-          }
-        });
-        setFieldErrors(newFieldErrors);
-        setError(err.errors);
-      } else {
-        setError("An error occurred, please try again");
-      }
+    } catch (err) {
+        console.log(err);
     } finally {
       setLoading(false);
     }
