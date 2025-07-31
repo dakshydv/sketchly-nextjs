@@ -4,14 +4,14 @@ import { NextRequest, NextResponse } from "next/server";
 // get room
 export async function GET(
   req: NextRequest,
-  { params }: { params: { roomName: string } }
+  { params }: { params: Promise<{ roomName: string }> }
 ) {
-  const roomName = await(params).roomName;
+  const { roomName } = await params;
   const adminId = Number(req.headers.get("userId"));
   const room = await prisma.room.findFirst({
     where: {
       name: roomName,
-      adminId
+      adminId,
     },
   });
   if (!room) {

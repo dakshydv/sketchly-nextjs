@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 // get all the shapes
 export async function GET(
   req: NextRequest,
-  { params }: { params: { roomId: number } }
+  { params }: { params: Promise<{ roomId: number }> }
 ) {
   const roomId = Number((await params).roomId);
   const userId = Number(req.headers.get("userId"));
@@ -19,7 +19,7 @@ export async function GET(
   const shapes = await prisma.shape.findMany({
     where: {
       roomId,
-      userId
+      userId,
     },
     orderBy: {
       id: "desc",
@@ -41,7 +41,7 @@ export async function GET(
 // create shape
 export async function POST(
   req: NextRequest,
-  { params }: { params: { roomId: number } }
+  { params }: { params: Promise<{ roomId: number }> }
 ) {
   const { shapes } = await req.json();
   const roomId = Number((await params).roomId);
@@ -75,23 +75,26 @@ export async function POST(
 }
 
 // remove all the shapes
-export async function DELETE(req: NextRequest, { params }: { params: { roomId: number }}) {
-    const roomId = Number((await params).roomId);
-    const userId = Number(req.headers.get("userId"));
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ roomId: number }> }
+) {
+  const roomId = Number((await params).roomId);
+  const userId = Number(req.headers.get("userId"));
 
-    try {
-        await prisma.shape.deleteMany({
-            where: {
-                roomId,
-                userId
-            }
-        })
-        return NextResponse.json({
-            message: "canvas cleared for the room"
-        })
-    } catch (err) {
-        return NextResponse.json({
-            message: "an error occuered while clearing canvas"
-        })
-    }
+  try {
+    await prisma.shape.deleteMany({
+      where: {
+        roomId,
+        userId,
+      },
+    });
+    return NextResponse.json({
+      message: "canvas cleared for the room",
+    });
+  } catch (err) {
+    return NextResponse.json({
+      message: "an error occuered while clearing canvas",
+    });
+  }
 }
