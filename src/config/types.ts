@@ -60,3 +60,15 @@ export interface Cords {
   x: number;
   y: number;
 }
+
+export interface FormData {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface LinkProps {
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+}
