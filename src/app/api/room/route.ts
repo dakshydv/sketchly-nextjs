@@ -1,17 +1,15 @@
 import { prisma } from "@/config/utils";
 import { NextRequest, NextResponse } from "next/server";
 
+// create new room
 export async function POST(req: NextRequest) {
   const { roomName } = await req.json();
-  const userId = req.headers.get("userId");
-  console.log(`roomname is ${roomName}`);
-  console.log(`user id is ${userId}`);
+  const adminId= Number(req.headers.get("userId"));
 
-  if (!userId) {
+  if (!adminId) {
     return NextResponse.json({
-      message: "did not receive user id",
+      message: "did not receive admin id",
     });
-    return;
   }
 
   if (!roomName) {
@@ -23,6 +21,7 @@ export async function POST(req: NextRequest) {
   const roomExists = await prisma.room.findFirst({
     where: {
       name: roomName,
+      adminId
     },
   });
 
@@ -35,7 +34,7 @@ export async function POST(req: NextRequest) {
   const room = await prisma.room.create({
     data: {
       name: roomName,
-      adminId: Number(userId),
+      adminId,
     },
   });
 

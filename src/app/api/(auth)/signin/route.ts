@@ -2,7 +2,8 @@ import { SignInSchema } from "@/config/schema";
 import { prisma } from "@/config/utils";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+// import jwt from "jsonwebtoken";
+import * as jwt from "jose";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -52,12 +53,20 @@ export async function POST(req: NextRequest) {
     return;
   }
 
-  const token = jwt.sign(
-    {
-      userId: user.id,
-    },
-    JWT_SECRET
-  );
+  // const token = jwt.sign(
+  //   {
+  //     userId: user.id,
+  //   },
+  //   JWT_SECRET
+  // );
+
+  const jwtKey = jwt.base64url.decode(JWT_SECRET);
+  const token = await new jwt.SignJWT({
+    userId: user.id,
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .sign(jwtKey);
+  console.log(token); // this needs to be deleted later
 
   return NextResponse.json({
     message: "user signed in successfully",

@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import * as jwt from "jose";
 
-export function middleware(request: NextRequest) {
-    console.log(`middleware running for ${request.nextUrl.pathname}`);
-    
+export async function middleware(request: NextRequest) {
   const token = request.headers.get("authorization") || "";
 
   if (!token) {
@@ -11,9 +9,6 @@ export function middleware(request: NextRequest) {
   }
 
   const JWT_SECRET = process.env.JWT_SECRET;
-  console.log(JWT_SECRET);
-  console.log(token);
-  
 
   if (!JWT_SECRET) {
     console.log("could not access jwt secret");
@@ -23,28 +18,30 @@ export function middleware(request: NextRequest) {
     );
   }
 
-  const decoded = jwt.verify(token, JWT_SECRET);
-    
+  const jwtKey = jwt.base64url.decode(JWT_SECRET);
+  const decoded = await jwt.jwtVerify(token, jwtKey);
 
-    if (decoded && typeof decoded === "object" && "userId" in decoded) {
-      console.log("success");
-      
-      const requestHeaders = new Headers(request.headers);
-      requestHeaders.set("userId", decoded.userId as string);
+  if (decoded) {
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("userId", decoded.payload.userId as string);
 
-      return NextResponse.next({
-        request: {
-          headers: requestHeaders,
-        },
-      });
-    } else {
-      return NextResponse.json({ message: "unauthorized" }, { status: 403 });
-    }
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+  } else {
+    return NextResponse.json({ message: "unauthorized" }, { status: 403 });
+  }
 }
 
 export const config = {
   matcher: [
     "/api/room/:path*",
     "/api/protected/:path*",
+    "/api/test/:path*",
+    "/api/room/[roomName]/:path*",
+    "/api/room/shapes/[roomId]/:path*",
+    "/api/room/:path*"
   ],
 };
