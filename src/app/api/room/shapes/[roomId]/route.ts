@@ -95,6 +95,7 @@ export async function DELETE(
   } catch (err) {
     return NextResponse.json({
       message: "an error occuered while clearing canvas",
+      err
     });
   }
 }
