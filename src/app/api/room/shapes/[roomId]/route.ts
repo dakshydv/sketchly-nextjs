@@ -1,4 +1,4 @@
-import { shapes } from "@/config/types";
+import { shapesMessage } from "@/config/types";
 import { prisma } from "@/config/utils";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -54,7 +54,7 @@ export async function POST(
   }
 
   try {
-    shapes.map(async (shape: shapes) => {
+    shapes.map(async (shape: shapesMessage) => {
       await prisma.shape.create({
         data: {
           roomId,

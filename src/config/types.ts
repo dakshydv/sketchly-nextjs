@@ -13,7 +13,7 @@ export interface request extends Request {
   userId?: number;
 }
 
-export type shapes =
+export type shapesMessage =
   | {
       type: "rect";
       x: number;
@@ -56,6 +56,16 @@ export type shapes =
       cords: Cords[];
     };
 
+export type Shapes =
+  | "rect"
+  | "diamond"
+  | "circle"
+  | "line"
+  | "pointer"
+  | "text"
+  | "pencil"
+  | "eraser";
+
 export interface Cords {
   x: number;
   y: number;
@@ -71,4 +81,13 @@ export interface LinkProps {
   href: string;
   children: React.ReactNode;
   className?: string;
+}
+
+export interface ShapesResponse {
+  userId: number;
+  roomId: number;
+  id: number;
+  message: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
