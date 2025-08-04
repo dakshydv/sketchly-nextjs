@@ -12,6 +12,8 @@ export class Engine {
   private clicked: boolean;
   private startX = 0;
   private startY = 0;
+  private selectedStrokeColor: string;
+  private selectedBgColor: string;
   private selectedTool: Shapes | null;
   private freeDrawCords: Cords[] = [];
   private input: HTMLTextAreaElement;
@@ -24,6 +26,8 @@ export class Engine {
   constructor(
     canvas: HTMLCanvasElement,
     roomId: number,
+    bgColor: string,
+    strokeColor: string,
     socket?: WebSocket
   ) {
     this.canvas = canvas;
@@ -35,6 +39,8 @@ export class Engine {
     this.existingShapes = [];
     this.roomId = roomId;
     this.socket = socket;
+    this.selectedBgColor = bgColor;
+    this.selectedStrokeColor = strokeColor;
     // this.initHandlers();
     this.initMouseHanlders();
     // this.init();
@@ -76,7 +82,8 @@ export class Engine {
   clearCanvas() {
     console.log("clearning canvas ..."); // this needs to be deleted later
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = "#121212";
+    console.log(`selected bg color is ${this.selectedBgColor}`);                // this needs to be deleted later
+    this.ctx.fillStyle = this.selectedBgColor;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.existingShapes.map((shape) => {
@@ -286,6 +293,14 @@ export class Engine {
     this.clearCanvas();
   }
 
+  setBgColor(color: string) {
+    this.selectedBgColor = color;
+  }
+
+  setStrokeColor(color: string) {
+    this.selectedStrokeColor = color;
+  }
+
   initMouseHanlders() {
     this.mouseClickHandler = (e) => {
       if (this.selectedTool === "text") {
@@ -414,6 +429,7 @@ export class Engine {
         this.ctx.strokeStyle = "rgb(256, 256, 256)";
 
         if (this.selectedTool === "rect") {
+          this.ctx.strokeStyle = "#FF0000"
           this.ctx.strokeRect(this.startX, this.startY, width, height);
         } else if (this.selectedTool === "circle") {
           console.log("circle inside functions");

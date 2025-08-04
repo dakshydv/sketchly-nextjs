@@ -11,7 +11,7 @@ export function IconButton({
 }) {
   return <button
     onClick={onClick}
-    className={`p-2 rounded-md ${theme} hover:cursor-pointer font-medium `}
+    className={`px-2 my-1 rounded-md ${theme} hover:cursor-pointer font-medium `}
   >
     {icon}
   </button>;
