@@ -9,12 +9,14 @@ export function Canvas({
   tool,
   bgColor,
   strokeColor,
+  strokeWidth
 }: {
   roomId: number;
   socket?: WebSocket;
   tool: Shapes;
   bgColor: string;
   strokeColor: string;
+  strokeWidth: number
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [engine, setEngine] = useState<Engine>();
@@ -44,6 +46,7 @@ export function Canvas({
         roomId,
         bgColor,
         strokeColor,
+        strokeWidth,
         socket
       );
       setEngine(newEngine);
@@ -67,9 +70,13 @@ export function Canvas({
 
   useEffect(() => {
     console.log(`changing stroke color to ${strokeColor}`);
-    
     engine?.setStrokeColor(strokeColor);
   }, [strokeColor]);
+
+  useEffect(() => {
+    console.log(`stroke width changing to ${strokeWidth}`);
+    engine?.setStrokeWidth(strokeWidth)
+  }, [strokeWidth])
 
   return (
     <canvas

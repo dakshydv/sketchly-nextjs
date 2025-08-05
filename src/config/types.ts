@@ -20,12 +20,16 @@ export type shapesMessage =
       y: number;
       width: number;
       height: number;
+      strokeStyle: string;
+      strokeWidth: number;
     }
   | {
       type: "circle";
       centerX: number;
       centerY: number;
       radius: number;
+      strokeStyle: string;
+      strokeWidth: number;
     }
   | {
       type: "line";
@@ -33,6 +37,8 @@ export type shapesMessage =
       startY: number;
       endX: number;
       endY: number;
+      strokeStyle: string;
+      strokeWidth: number;
     }
   | {
       type: "text";
@@ -40,6 +46,8 @@ export type shapesMessage =
       style: string;
       x: number;
       y: number;
+      strokeStyle: string;
+      strokeWidth: number;
     }
   | {
       type: "diamond";
@@ -49,11 +57,15 @@ export type shapesMessage =
       xVertical: number;
       yTop: number;
       yBottom: number;
+      strokeStyle: string;
+      strokeWidth: number;
     }
   | {
       type: "pencil";
       style: string;
       cords: Cords[];
+      strokeStyle: string;
+      strokeWidth: number;
     };
 
 export type Shapes =

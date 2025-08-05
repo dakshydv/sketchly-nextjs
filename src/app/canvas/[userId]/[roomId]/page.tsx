@@ -8,7 +8,6 @@ export default async function CanvasPage({
     roomId: number;
   }>;
 }) {
-  const userId = (await params).userId;
   const roomId = (await params).roomId;
 
   return <RoomCanvas roomId={roomId} />;

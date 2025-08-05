@@ -15,10 +15,12 @@ import {
 } from "lucide-react";
 import { Shapes } from "../config/types";
 import { ColorPicker } from "./ColorPicker";
+import { StrokeIcon } from "./StrokeIcon";
 
 export function RoomCanvas({ roomId }: { roomId: number }) {
   // const [socket, setSocket] = useState<WebSocket | null>(null);
   const [tool, setTool] = useState<Shapes>("pointer");
+  const [selectedStrokeWidth, setStrokeWidth] = useState<number>(1)
   const [selectedStrokeColor, setStrokeColor] = useState<string>();
   const [selectedBgColor, setBgColor] = useState<string>();
   // useEffect(() => {
@@ -44,7 +46,7 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
   return (
     <div className="relative w-screen h-screen">
       {tool ? (
-        <Canvas roomId={roomId} tool={tool} bgColor={selectedBgColor ?? "#121212"} strokeColor={selectedStrokeColor ?? 
+        <Canvas roomId={roomId} tool={tool} strokeWidth={selectedStrokeWidth} bgColor={selectedBgColor ?? "#121212"} strokeColor={selectedStrokeColor ?? 
           "#FFFFFF"
         } />
       ) : (
@@ -117,7 +119,8 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
           Share
         </button>
       </div>
-      <div className="fixed w-72 px-4 py-2 ml-4 bg-[#23232a] text-white top-46 z-10">
+      {/* custom options */}
+      <div className="fixed px-4 py-4 ml-4 bg-[#23232a] text-white rounded-md top-32 z-10">
         <p className="text-sm">Stroke</p>
         {/* stroke */}
         <div className="mt-1 flex gap-1">
@@ -135,6 +138,13 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
           <ColorPicker background="bg-[#325252]" border={selectedBgColor === "#325252" ? "border-[#5e96d9]" : "border-none"} onClick={() => setBgColor("#325252")} />
           <ColorPicker background="bg-[#54658a]" border={selectedBgColor === "#54658a" ? "border-[#5e96d9]" : "border-none"} onClick={() => setBgColor("#54658a")} />
           <ColorPicker background="bg-[#8a5460]" border={selectedBgColor === "#8a5460" ? "border-[#5e96d9]" : "border-none"} onClick={() => setBgColor("#8a5460")} />
+        </div>
+        {/* stroke width */}
+        <p className="mt-3">Stroke width</p>
+        <div className="mt-1 flex gap-1">
+          <StrokeIcon onClick={() => setStrokeWidth(1)} strokeWidth={1} theme={selectedStrokeWidth === 1 ? "bg-[#403e6a]" : "bg-[#2e2d39]"} />
+          <StrokeIcon onClick={() => setStrokeWidth(2)} strokeWidth={2} theme={selectedStrokeWidth === 2 ? "bg-[#403e6a]" : "bg-[#2e2d39]"} />
+          <StrokeIcon onClick={() => setStrokeWidth(3)} strokeWidth={3} theme={selectedStrokeWidth === 3 ? "bg-[#403e6a]" : "bg-[#2e2d39]"} />
         </div>
       </div>
     </div>
