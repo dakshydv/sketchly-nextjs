@@ -59,6 +59,7 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
         <div className="bg-[#23232a] backdrop-blur-sm rounded-lg py-2 px-3 flex items-center justify-center text-white">
           <Menu />
         </div>
+        {/* tools selection */}
         <div className="bg-[#23232a] backdrop-blur-sm rounded-lg px-3 flex gap-1">
           <IconButton
             onClick={() => setTool("pointer")}

@@ -162,30 +162,24 @@ export class Engine {
             this.ctx.restore();
           }
           break;
-        case "arrow":
-          {
-            const headLength = 20;
-            const dx = shape.toX - shape.fromX;
-            const dy = shape.toY - shape.fromY;
-            const angle = Math.atan2(dy, dx);
-            this.ctx.beginPath();
-            this.ctx.strokeStyle = shape.strokeStyle;
-            this.ctx.lineWidth = shape.strokeWidth;
-            this.ctx.moveTo(shape.fromX, shape.fromY);
-            this.ctx.lineTo(shape.toX, shape.toY);
-            this.ctx.lineTo(
-              shape.toX - headLength * Math.cos(angle - Math.PI / 6),
-              shape.toY - headLength * Math.sin(angle - Math.PI / 6)
-            );
-            this.ctx.moveTo(shape.toX, shape.toY);
-            this.ctx.lineTo(
-              shape.toX - headLength * Math.cos(angle + Math.PI / 6),
-              shape.toY - headLength * Math.sin(angle + Math.PI / 6)
-            );
-            this.ctx.stroke();
-            this.ctx.closePath();
-          }
-          break;
+          case "arrow":
+            {
+              const headLength = 20;
+              const dx = shape.toX - shape.fromX;
+              const dy = shape.toY - shape.fromY;
+              const angle = Math.atan2(dy, dx);
+              this.ctx.beginPath();
+              this.ctx.strokeStyle = shape.strokeStyle;
+              this.ctx.lineWidth = shape.strokeWidth;
+              this.ctx.moveTo(shape.fromX, shape.fromY);
+              this.ctx.lineTo(shape.toX, shape.toY);
+              this.ctx.lineTo(shape.toX - headLength * Math.cos(angle - Math.PI / 6), shape.toY - headLength * Math.sin(angle - Math.PI / 6));
+              this.ctx.moveTo(shape.toX, shape.toY);
+              this.ctx.lineTo(shape.toX - headLength * Math.cos(angle + Math.PI / 6), shape.toY - headLength * Math.sin(angle + Math.PI / 6));
+              this.ctx.stroke();
+              this.ctx.closePath();
+            }
+            break;
 
         default:
           break;
@@ -474,8 +468,8 @@ export class Engine {
               toX: e.clientX,
               toY: e.clientY,
               strokeStyle: this.selectedStrokeColor,
-              strokeWidth: this.selectedStrokeWidth,
-            };
+              strokeWidth: this.selectedStrokeWidth
+            }
             this.existingShapes.push(shape);
             this.clearCanvas();
           }

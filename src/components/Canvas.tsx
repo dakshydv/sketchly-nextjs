@@ -9,14 +9,14 @@ export function Canvas({
   tool,
   bgColor,
   strokeColor,
-  strokeWidth
+  strokeWidth,
 }: {
   roomId: number;
   socket?: WebSocket;
   tool: Shapes;
   bgColor: string;
   strokeColor: string;
-  strokeWidth: number
+  strokeWidth: number;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [engine, setEngine] = useState<Engine>();
@@ -75,14 +75,19 @@ export function Canvas({
 
   useEffect(() => {
     console.log(`stroke width changing to ${strokeWidth}`);
-    engine?.setStrokeWidth(strokeWidth)
-  }, [strokeWidth])
+    engine?.setStrokeWidth(strokeWidth);
+  }, [strokeWidth]);
 
   return (
     <canvas
       ref={canvasRef}
       height={dimensions.height}
       width={dimensions.width}
+      className={`${
+        tool !== "pointer" && tool !== "eraser" ? "cursor-crosshair-plus" : ""
+      }
+      ${tool === "eraser" && "cursor-eraser"}
+      ${tool === "pointer" && "cursor-pointer"}`}
     ></canvas>
   );
 }
