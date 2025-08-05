@@ -66,7 +66,16 @@ export type shapesMessage =
       cords: Cords[];
       strokeStyle: string;
       strokeWidth: number;
-    };
+    }
+    | {
+      type: "arrow";
+      fromX: number;
+      toX: number;
+      fromY: number;
+      toY: number;
+      strokeStyle: string;
+      strokeWidth: number
+    }
 
 export type Shapes =
   | "rect"
@@ -76,7 +85,8 @@ export type Shapes =
   | "pointer"
   | "text"
   | "pencil"
-  | "eraser";
+  | "eraser"
+  | "arrow";
 
 export interface Cords {
   x: number;

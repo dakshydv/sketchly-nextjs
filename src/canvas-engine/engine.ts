@@ -4,6 +4,7 @@ import { getExistingShapes } from "./utils";
 import getStroke from "perfect-freehand";
 import { getSvgPathFromStroke } from "./utils";
 import { DancingScript } from "@/config/style";
+import { TokenExpiredError } from "jsonwebtoken";
 
 export class Engine {
   private canvas: HTMLCanvasElement;
@@ -159,6 +160,30 @@ export class Engine {
             this.ctx.fillStyle = shape.strokeStyle;
             this.ctx.fill(path);
             this.ctx.restore();
+          }
+          break;
+        case "arrow":
+          {
+            const headLength = 20;
+            const dx = shape.toX - shape.fromX;
+            const dy = shape.toY - shape.fromY;
+            const angle = Math.atan2(dy, dx);
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = shape.strokeStyle;
+            this.ctx.lineWidth = shape.strokeWidth;
+            this.ctx.moveTo(shape.fromX, shape.fromY);
+            this.ctx.lineTo(shape.toX, shape.toY);
+            this.ctx.lineTo(
+              shape.toX - headLength * Math.cos(angle - Math.PI / 6),
+              shape.toY - headLength * Math.sin(angle - Math.PI / 6)
+            );
+            this.ctx.moveTo(shape.toX, shape.toY);
+            this.ctx.lineTo(
+              shape.toX - headLength * Math.cos(angle + Math.PI / 6),
+              shape.toY - headLength * Math.sin(angle + Math.PI / 6)
+            );
+            this.ctx.stroke();
+            this.ctx.closePath();
           }
           break;
 
@@ -440,6 +465,21 @@ export class Engine {
             this.clearCanvas();
           }
           break;
+        case "arrow":
+          {
+            shape = {
+              type: "arrow",
+              fromX: this.startX,
+              fromY: this.startY,
+              toX: e.clientX,
+              toY: e.clientY,
+              strokeStyle: this.selectedStrokeColor,
+              strokeWidth: this.selectedStrokeWidth,
+            };
+            this.existingShapes.push(shape);
+            this.clearCanvas();
+          }
+          break;
 
         default:
           break;
@@ -504,6 +544,27 @@ export class Engine {
           });
           this.clearCanvas();
           this.initPencilDraw(this.freeDrawCords, this.selectedStrokeWidth);
+        } else if (this.selectedTool === "arrow") {
+          const headLength = 20;
+          const dx = e.clientX - this.startX;
+          const dy = e.clientY - this.startY;
+          const angle = Math.atan2(dy, dx);
+          this.ctx.beginPath();
+          this.ctx.strokeStyle = this.selectedStrokeColor;
+          this.ctx.lineWidth = this.selectedStrokeWidth;
+          this.ctx.moveTo(this.startX, this.startY);
+          this.ctx.lineTo(e.clientX, e.clientY);
+          this.ctx.lineTo(
+            e.clientX - headLength * Math.cos(angle - Math.PI / 6),
+            e.clientY - headLength * Math.sin(angle - Math.PI / 6)
+          );
+          this.ctx.moveTo(e.clientX, e.clientY);
+          this.ctx.lineTo(
+            e.clientX - headLength * Math.cos(angle + Math.PI / 6),
+            e.clientY - headLength * Math.sin(angle + Math.PI / 6)
+          );
+          this.ctx.stroke();
+          this.ctx.closePath();
         }
       }
     };

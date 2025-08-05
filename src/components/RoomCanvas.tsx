@@ -8,6 +8,7 @@ import {
   Eraser,
   Menu,
   Minus,
+  MoveRight,
   Pencil,
   Pointer,
   RectangleHorizontal,
@@ -103,6 +104,13 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
               <Pencil size={18} fill={tool === "pencil" ? "#FFFFFF" : ""} />
             }
             theme={tool === "pencil" ? "bg-[#403e6a] text-white" : "text-white"}
+          />
+          <IconButton
+            onClick={() => setTool("arrow")}
+            icon={
+              <MoveRight size={18} fill={tool === "arrow" ? "#FFFFFF" : ""} />
+            }
+            theme={tool === "arrow" ? "bg-[#403e6a] text-white" : "text-white"}
           />
           <IconButton
             onClick={() => setTool("text")}
