@@ -23,7 +23,6 @@ export function Canvas({
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    // Set initial dimensions and handle window resize
     const updateDimensions = () => {
       setDimensions({
         width: window.innerWidth,

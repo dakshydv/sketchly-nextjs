@@ -4,7 +4,6 @@ import { getExistingShapes } from "./utils";
 import getStroke from "perfect-freehand";
 import { getSvgPathFromStroke } from "./utils";
 import { DancingScript } from "@/config/style";
-import { TokenExpiredError } from "jsonwebtoken";
 
 export class Engine {
   private canvas: HTMLCanvasElement;
