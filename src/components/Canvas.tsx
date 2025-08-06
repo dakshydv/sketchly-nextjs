@@ -58,6 +58,7 @@ export function Canvas({
 
   useEffect(() => {
     if (engine) {
+      console.log(`changing tool to ${tool}`);
       engine.setTool(tool);
     }
   }, [tool, engine]);

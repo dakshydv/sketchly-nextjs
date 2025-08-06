@@ -86,7 +86,6 @@ export class Engine {
   clearCanvas() {
     console.log("clearning canvas ..."); // this needs to be deleted later
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    console.log(`selected bg color is ${this.selectedBgColor}`); // this needs to be deleted later
     this.ctx.fillStyle = this.selectedBgColor;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -128,10 +127,10 @@ export class Engine {
 
         case "text":
           {
-            this.ctx.fillStyle = shape.style;
             this.ctx.strokeStyle = shape.strokeStyle;
             this.ctx.lineWidth = shape.strokeWidth;
             this.ctx.font = "24px 'Dancing Script', cursive";
+            this.ctx.fillStyle = shape.strokeStyle
             this.ctx.fillText(shape.text, shape.x, shape.y + 24);
           }
           break;
@@ -161,24 +160,30 @@ export class Engine {
             this.ctx.restore();
           }
           break;
-          case "arrow":
-            {
-              const headLength = 20;
-              const dx = shape.toX - shape.fromX;
-              const dy = shape.toY - shape.fromY;
-              const angle = Math.atan2(dy, dx);
-              this.ctx.beginPath();
-              this.ctx.strokeStyle = shape.strokeStyle;
-              this.ctx.lineWidth = shape.strokeWidth;
-              this.ctx.moveTo(shape.fromX, shape.fromY);
-              this.ctx.lineTo(shape.toX, shape.toY);
-              this.ctx.lineTo(shape.toX - headLength * Math.cos(angle - Math.PI / 6), shape.toY - headLength * Math.sin(angle - Math.PI / 6));
-              this.ctx.moveTo(shape.toX, shape.toY);
-              this.ctx.lineTo(shape.toX - headLength * Math.cos(angle + Math.PI / 6), shape.toY - headLength * Math.sin(angle + Math.PI / 6));
-              this.ctx.stroke();
-              this.ctx.closePath();
-            }
-            break;
+        case "arrow":
+          {
+            const headLength = 20;
+            const dx = shape.toX - shape.fromX;
+            const dy = shape.toY - shape.fromY;
+            const angle = Math.atan2(dy, dx);
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = shape.strokeStyle;
+            this.ctx.lineWidth = shape.strokeWidth;
+            this.ctx.moveTo(shape.fromX, shape.fromY);
+            this.ctx.lineTo(shape.toX, shape.toY);
+            this.ctx.lineTo(
+              shape.toX - headLength * Math.cos(angle - Math.PI / 6),
+              shape.toY - headLength * Math.sin(angle - Math.PI / 6)
+            );
+            this.ctx.moveTo(shape.toX, shape.toY);
+            this.ctx.lineTo(
+              shape.toX - headLength * Math.cos(angle + Math.PI / 6),
+              shape.toY - headLength * Math.sin(angle + Math.PI / 6)
+            );
+            this.ctx.stroke();
+            this.ctx.closePath();
+          }
+          break;
 
         default:
           break;
@@ -223,10 +228,12 @@ export class Engine {
     document.body.appendChild(this.input);
     this.input.addEventListener("blur", () => {
       this.clearCanvas();
+      this.ctx.beginPath();
       this.ctx.strokeStyle = this.selectedStrokeColor;
       this.ctx.fillStyle = this.selectedStrokeColor;
       this.ctx.font = "24px 'Dancing Script', cursive";
       this.ctx.fillText(this.input.value, x, y);
+      this.ctx.closePath();
       const shape: shapesMessage = {
         type: "text",
         text: this.input.value,
@@ -236,7 +243,7 @@ export class Engine {
         strokeStyle: this.selectedStrokeColor,
         strokeWidth: this.selectedStrokeWidth,
       };
-      this.informWsServer(shape);
+      this.existingShapes.push(shape)
       document.body.removeChild(this.input);
     });
     this.selectedTool = null;
@@ -278,29 +285,134 @@ export class Engine {
       case "rect":
         {
           if (
-            x >= shape.x &&
-            x <= shape.x + shape.width &&
-            y >= shape.y &&
-            y <= shape.y + shape.height
+            (x >= shape.x &&
+              x <= shape.x + shape.width &&
+              y >= shape.y - 3 &&
+              y <= shape.y + 3) ||
+            (x === shape.x && y >= shape.y && y <= shape.y + shape.height) ||
+            (x >= shape.x &&
+              x <= shape.x + shape.width &&
+              y === shape.y + shape.height) ||
+            (x === shape.x + shape.width &&
+              y >= shape.y &&
+              y <= shape.y + shape.height)
           ) {
-            console.log(`rectangle found`);
-            console.log(`shape is ${shape.type}`);
-            console.log(`x is ${x}`);
-            console.log(`y is ${y}`);
-            console.log(`shape x is ${shape.x}`);
-            console.log(`shape y is ${shape.y}`);
+            console.log(`deleting rectangle`);
             return true;
           }
         }
         break;
-
-      case "diamond":
+      case "circle":
         {
-          // if ) {
-          // }
+          console.log("deleting circle"); // this needs to be deleted later
+          const dx = Math.abs(shape.centerX - x);
+          const dy = Math.abs(shape.centerY - y);
+          if (
+            (shape.radius >= dx - 5 && shape.radius <= dx + 5) ||
+            (shape.radius >= dy - 5 && shape.radius <= dy + 5)
+          ) {
+            return true;
+          }
         }
         break;
+      case "diamond":
+        break;
+      case "line":
+        {
+          if (
+            (x >= shape.startX &&
+              x <= shape.endX &&
+              y <= shape.startY &&
+              y >= shape.endY) ||
+            (x >= shape.startX &&
+              x <= shape.endX &&
+              y >= shape.startY &&
+              y <= shape.endY) ||
+            (x <= shape.startX &&
+              x >= shape.endX &&
+              y <= shape.startY &&
+              y >= shape.endY) ||
+            (x <= shape.startX &&
+              x >= shape.endX &&
+              y >= shape.startY &&
+              y <= shape.endY)
+          ) {
+            return true;
+          }
+        }
+        break;
+      case "arrow":
+        {
+          const headLength = 20;
+          const dx = shape.toX - shape.fromX;
+          const dy = shape.toY - shape.fromY;
+          const angle = Math.atan2(dy, dx);
+          const arrowLeftX =
+            shape.toX - headLength * Math.cos(angle - Math.PI / 6);
+          const arrowLeftY =
+            shape.toX - headLength * Math.sin(angle - Math.PI / 6);
+          const arrowRightX =
+            shape.toX - headLength * Math.cos(angle + Math.PI / 6);
+          const arrowRightY =
+            shape.toX - headLength * Math.sin(angle + Math.PI / 6);
 
+          if (
+            // main line
+            (x >= shape.fromX &&
+              x <= shape.toX &&
+              y <= shape.fromY &&
+              y >= shape.toY) ||
+            (x >= shape.fromX &&
+              x <= shape.toX &&
+              y >= shape.fromY &&
+              y <= shape.toY) ||
+            (x <= shape.fromX &&
+              x >= shape.toX &&
+              y <= shape.fromY &&
+              y >= shape.toY) ||
+            (x <= shape.fromX &&
+              x >= shape.toX &&
+              y >= shape.fromY &&
+              y <= shape.toY) ||
+            // left side arrow
+            (x >= arrowLeftX &&
+              x <= shape.toX &&
+              y <= arrowLeftY &&
+              y >= shape.toY) ||
+            (x >= arrowLeftX &&
+              x <= shape.toX &&
+              y >= arrowLeftY &&
+              y <= shape.toY) ||
+            (x <= arrowLeftX &&
+              x >= shape.toX &&
+              y <= arrowLeftY &&
+              y >= shape.toY) ||
+            (x <= arrowLeftX &&
+              x >= shape.toX &&
+              y >= arrowLeftY &&
+              y <= shape.toY) ||
+            // right side arrow
+            (x >= arrowRightX &&
+              x <= shape.toX &&
+              y <= arrowRightY &&
+              y >= shape.toY) ||
+            (x >= arrowRightX &&
+              x <= shape.toX &&
+              y >= arrowRightY &&
+              y <= shape.toY) ||
+            (x <= arrowRightX &&
+              x >= shape.toX &&
+              y <= arrowRightY &&
+              y >= shape.toY) ||
+            (x <= arrowRightX &&
+              x >= shape.toX &&
+              y >= arrowRightY &&
+              y <= shape.toY)
+          ) {
+            return true;
+          }
+        }
+        break;
       default:
         break;
     }
@@ -344,9 +456,12 @@ export class Engine {
         this.initTextDraw(e.clientX, e.clientY);
       }
       if (this.selectedTool === "eraser") {
-        for (let i = 0; i < this.existingShapes.length - 1; i++) {
+        this.clearCanvas();
+        console.log("erasing init"); // this needs to be deleted later
+        console.log(this.existingShapes); // this needs to be deleted later
+        for (let i = 0; i < this.existingShapes.length; i++) {
           const shape = this.existingShapes[i];
-          if (this.isPointInShape(this.startX, this.startY, shape)) {
+          if (this.isPointInShape(e.clientX, e.clientY, shape)) {
             this.deleteShape(shape);
           }
         }
@@ -390,7 +505,6 @@ export class Engine {
               strokeStyle: this.selectedStrokeColor,
               strokeWidth: this.selectedStrokeWidth,
             };
-            // this.informWsServer(shape);
             this.existingShapes.push(shape);
           }
           break;
@@ -467,8 +581,8 @@ export class Engine {
               toX: e.clientX,
               toY: e.clientY,
               strokeStyle: this.selectedStrokeColor,
-              strokeWidth: this.selectedStrokeWidth
-            }
+              strokeWidth: this.selectedStrokeWidth,
+            };
             this.existingShapes.push(shape);
             this.clearCanvas();
           }
