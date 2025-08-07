@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@excalidraw/excalidraw": "^0.18.0",
     "@prisma/client": "^6.13.0",
     "@types/axios": "^0.9.36",
     "@types/bcrypt": "^6.0.0",

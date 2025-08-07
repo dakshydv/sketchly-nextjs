@@ -3,7 +3,7 @@ import { Cords, Shapes, shapesMessage } from "../config/types";
 import { getExistingShapes } from "./utils";
 import getStroke from "perfect-freehand";
 import { getSvgPathFromStroke } from "./utils";
-import { DancingScript } from "@/config/style";
+import { CaveatFont } from "@/config/style";
 
 export class Engine {
   private canvas: HTMLCanvasElement;
@@ -129,8 +129,8 @@ export class Engine {
           {
             this.ctx.strokeStyle = shape.strokeStyle;
             this.ctx.lineWidth = shape.strokeWidth;
-            this.ctx.font = "24px 'Dancing Script', cursive";
-            this.ctx.fillStyle = shape.strokeStyle
+            this.ctx.font = "24px 'Caveat', cursive";
+            this.ctx.fillStyle = shape.strokeStyle;
             this.ctx.fillText(shape.text, shape.x, shape.y + 24);
           }
           break;
@@ -197,7 +197,7 @@ export class Engine {
     this.input.autofocus = true;
     this.input.style.left = `${x}px`;
     this.input.style.top = `${y}px`;
-    this.input.className = `${DancingScript.className} `;
+    this.input.className = `${CaveatFont.className} `;
     this.input.style.fontSize = "24px";
     Object.assign(this.input.style, {
       position: "absolute",
@@ -231,8 +231,8 @@ export class Engine {
       this.ctx.beginPath();
       this.ctx.strokeStyle = this.selectedStrokeColor;
       this.ctx.fillStyle = this.selectedStrokeColor;
-      this.ctx.font = "24px 'Dancing Script', cursive";
-      this.ctx.fillText(this.input.value, x, y);
+      this.ctx.font = "24px 'Caveat', cursive";
+      this.ctx.fillText(this.input.value, x, y + 24);
       this.ctx.closePath();
       const shape: shapesMessage = {
         type: "text",
@@ -243,7 +243,7 @@ export class Engine {
         strokeStyle: this.selectedStrokeColor,
         strokeWidth: this.selectedStrokeWidth,
       };
-      this.existingShapes.push(shape)
+      this.existingShapes.push(shape);
       document.body.removeChild(this.input);
     });
     this.selectedTool = null;
