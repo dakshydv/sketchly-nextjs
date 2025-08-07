@@ -27,7 +27,8 @@ export type shapesMessage =
       type: "circle";
       centerX: number;
       centerY: number;
-      radius: number;
+      radiusx: number;
+      radiusY: number;
       strokeStyle: string;
       strokeWidth: number;
     }
@@ -46,6 +47,7 @@ export type shapesMessage =
       style: string;
       x: number;
       y: number;
+      width: number,
       strokeStyle: string;
       strokeWidth: number;
     }

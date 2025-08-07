@@ -104,10 +104,12 @@ export class Engine {
             this.ctx.beginPath();
             this.ctx.strokeStyle = shape.strokeStyle;
             this.ctx.lineWidth = shape.strokeWidth;
-            this.ctx.arc(
+            this.ctx.ellipse(
               shape.centerX,
               shape.centerY,
-              shape.radius,
+              shape.radiusx,
+              shape.radiusY,
+              0,
               0,
               Math.PI * 2
             );
@@ -199,6 +201,7 @@ export class Engine {
     this.input.style.top = `${y}px`;
     this.input.className = `${CaveatFont.className} `;
     this.input.style.fontSize = "24px";
+    this.input.style.backgroundColor = this.selectedBgColor;
     Object.assign(this.input.style, {
       position: "absolute",
       display: "inline-block",
@@ -214,7 +217,6 @@ export class Engine {
       overflowX: "hidden",
       overflowY: "hidden",
       overflowWrap: "normal",
-      boxSizing: "content-box",
       wordBreak: "normal",
       whiteSpace: "pre",
       verticalAlign: "top",
@@ -222,10 +224,38 @@ export class Engine {
       wrap: "off",
       tabIndex: 0,
       dir: "auto",
-      width: "auto",
-      minHeight: "auto",
+      width: "200px",
+      minWidth: "200px",
     });
+
     document.body.appendChild(this.input);
+
+    // Auto-resize function
+    const autoResize = () => {
+      // Create a temporary span to measure text width
+      const tempSpan = document.createElement("span");
+      tempSpan.style.font = this.input.style.font;
+      tempSpan.style.fontSize = this.input.style.fontSize;
+      tempSpan.style.fontFamily = this.input.style.fontFamily;
+      tempSpan.style.visibility = "hidden";
+      tempSpan.style.position = "absolute";
+      tempSpan.style.whiteSpace = "pre";
+      tempSpan.textContent = this.input.value || "a";
+
+      document.body.appendChild(tempSpan);
+      const textWidth = tempSpan.offsetWidth;
+      document.body.removeChild(tempSpan);
+
+      this.input.style.width = `${Math.max(textWidth + 10, 200)}px`;
+    };
+
+    this.input.addEventListener("input", autoResize);
+    this.input.addEventListener("keydown", () => {
+      setTimeout(autoResize, 0); // Use timeout to ensure content is updated
+    });
+
+    autoResize();
+
     this.input.addEventListener("blur", () => {
       this.clearCanvas();
       this.ctx.beginPath();
@@ -240,6 +270,7 @@ export class Engine {
         style: "#FFFFFF",
         x,
         y,
+        width: this.input.offsetWidth,
         strokeStyle: this.selectedStrokeColor,
         strokeWidth: this.selectedStrokeWidth,
       };
@@ -280,7 +311,7 @@ export class Engine {
   }
 
   isPointInShape(x: number, y: number, shape: shapesMessage) {
-    console.log("checking for point in shape"); // this needs to be deleted later
+    const tolerance = 10;
     switch (shape.type) {
       case "rect":
         {
@@ -304,19 +335,83 @@ export class Engine {
         break;
       case "circle":
         {
-          console.log("deleting circle"); // this needs to be deleted later
-          const dx = Math.abs(shape.centerX - x);
-          const dy = Math.abs(shape.centerY - y);
-          if (
-            (shape.radius >= dx - 5 && shape.radius <= dx + 5) ||
-            (shape.radius >= dy - 5 && shape.radius <= dy + 5)
-          ) {
-            return true;
-          }
+          const dx = x - shape.centerX;
+          const dy = y - shape.centerY;
+          const normalized =
+            (dx * dx) /
+              ((shape.radiusx + tolerance) * (shape.radiusx + tolerance)) +
+            (dy * dy) /
+              ((shape.radiusY + tolerance) * (shape.radiusY + tolerance));
+          return normalized <= 1;
         }
         break;
       case "diamond":
-        break;
+        {
+          const distanceToLine = (
+            x1: number,
+            y1: number,
+            x2: number,
+            y2: number,
+            px: number,
+            py: number
+          ) => {
+            const A = px - x1;
+            const B = py - y1;
+            const C = x2 - x1;
+            const D = y2 - y1;
+
+            const dot = A * C + B * D;
+            const lenSq = C * C + D * D;
+
+            if (lenSq === 0) return Math.sqrt(A * A + B * B);
+
+            let param = dot / lenSq;
+            param = Math.max(0, Math.min(1, param));
+
+            const xx = x1 + param * C;
+            const yy = y1 + param * D;
+
+            const dx = px - xx;
+            const dy = py - yy;
+            return Math.sqrt(dx * dx + dy * dy);
+          };
+
+          const edge1 = distanceToLine(
+            shape.xLeft,
+            shape.yHorizontal,
+            shape.xVertical,
+            shape.yTop,
+            x,
+            y
+          );
+          const edge2 = distanceToLine(
+            shape.xVertical,
+            shape.yTop,
+            shape.xRight,
+            shape.yHorizontal,
+            x,
+            y
+          );
+          const edge3 = distanceToLine(
+            shape.xRight,
+            shape.yHorizontal,
+            shape.xVertical,
+            shape.yBottom,
+            x,
+            y
+          );
+          const edge4 = distanceToLine(
+            shape.xVertical,
+            shape.yBottom,
+            shape.xLeft,
+            shape.yHorizontal,
+            x,
+            y
+          );
+
+          const minDistance = Math.min(edge1, edge2, edge3, edge4);
+          return minDistance <= tolerance;
+        }
       case "line":
         {
           if (
@@ -413,6 +508,23 @@ export class Engine {
           }
         }
         break;
+      case "pencil": {
+        return shape.cords.some(
+          (point) => Math.hypot(point.x - x, point.y - y) <= tolerance
+        );
+      }
+      case "text":
+        {
+          if (
+            x >= shape.x + tolerance &&
+            x <= shape.x + shape.width + tolerance &&
+            y >= shape.y &&
+            y <= shape.y + 25 + tolerance
+          ) {
+            return true;
+          }
+        }
+        break;
       default:
         break;
     }
@@ -457,8 +569,6 @@ export class Engine {
       }
       if (this.selectedTool === "eraser") {
         this.clearCanvas();
-        console.log("erasing init"); // this needs to be deleted later
-        console.log(this.existingShapes); // this needs to be deleted later
         for (let i = 0; i < this.existingShapes.length; i++) {
           const shape = this.existingShapes[i];
           if (this.isPointInShape(e.clientX, e.clientY, shape)) {
@@ -515,7 +625,8 @@ export class Engine {
               type: "circle",
               centerX: this.startX + width / 2,
               centerY: this.startY + height / 2,
-              radius: Math.max(width, height) / 2,
+              radiusx: Math.abs((this.startX - e.clientX) / 2),
+              radiusY: Math.abs((this.startY - e.clientY) / 2),
               strokeWidth: this.selectedStrokeWidth,
               strokeStyle: this.selectedStrokeColor,
             };
@@ -610,11 +721,20 @@ export class Engine {
         } else if (this.selectedTool === "circle") {
           const centerX = this.startX + width / 2;
           const centerY = this.startY + height / 2;
-          const radius = Math.max(width, height) / 2;
+          const radiusX = Math.abs(width / 2);
+          const radiusY = Math.abs(height / 2);
           this.ctx.beginPath();
           this.ctx.strokeStyle = this.selectedStrokeColor;
           this.ctx.lineWidth = this.selectedStrokeWidth;
-          this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+          this.ctx.ellipse(
+            centerX,
+            centerY,
+            radiusX,
+            radiusY,
+            0,
+            0,
+            2 * Math.PI
+          );
           this.ctx.stroke();
           this.ctx.closePath();
         } else if (this.selectedTool === "line") {
