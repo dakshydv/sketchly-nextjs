@@ -8,7 +8,6 @@ import { CaveatFont } from "@/config/style";
 export class Engine {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
-  private existingShapes: shapesMessage[];
   private roomId: number;
   private clicked: boolean;
   private startX = 0;
@@ -23,6 +22,7 @@ export class Engine {
   private mouseUpHanlder: (e: MouseEvent) => void;
   private mouseMoveHandler: (e: MouseEvent) => void;
   private mouseClickHandler: (e: MouseEvent) => void;
+  existingShapes: shapesMessage[];
   socket?: WebSocket;
 
   constructor(
@@ -31,6 +31,7 @@ export class Engine {
     bgColor: string,
     strokeColor: string,
     strokeWidth: number,
+    existingShapes: shapesMessage[],
     socket?: WebSocket
   ) {
     this.canvas = canvas;
@@ -42,12 +43,16 @@ export class Engine {
     this.existingShapes = [];
     this.roomId = roomId;
     this.socket = socket;
+    this.existingShapes = existingShapes || [];
     this.selectedBgColor = bgColor;
     this.selectedStrokeWidth = strokeWidth;
     this.selectedStrokeColor = strokeColor;
     // this.initHandlers();
     this.initMouseHanlders();
     // this.init();
+
+    // Render existing shapes immediately after initialization
+    this.clearCanvas();
   }
 
   public setTool(tool: Shapes) {
@@ -72,6 +77,7 @@ export class Engine {
 
   informWsServer(shape: shapesMessage) {
     this.existingShapes.push(shape);
+    this.saveShapesToLocalStorage();
     // this.socket.send(
     //   JSON.stringify({
     //     type: "CHAT",
@@ -83,13 +89,42 @@ export class Engine {
     this.clearCanvas();
   }
 
+  private saveShapesToLocalStorage() {
+    try {
+      const shapesData = JSON.stringify(this.existingShapes);
+      localStorage.setItem(`shapes_room_${this.roomId}`, shapesData);
+      console.log(
+        `Saved ${this.existingShapes.length} shapes to localStorage for room ${this.roomId}`
+      );
+    } catch (error) {
+      console.error("Error saving shapes to localStorage:", error);
+    }
+  }
+
+  public getShapes() {
+    return this.existingShapes;
+  }
+
+  public clearLocalStorage() {
+    try {
+      localStorage.removeItem(`shapes_room_${this.roomId}`);
+      console.log(`Cleared localStorage for room ${this.roomId}`);
+    } catch (error) {
+      console.error("Error clearing localStorage:", error);
+    }
+  }
+
   clearCanvas() {
     console.log("clearning canvas ..."); // this needs to be deleted later
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillStyle = this.selectedBgColor;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    console.log(this.existingShapes); // this needs to be deleted later
+    if (this.existingShapes === undefined) {
+      this.existingShapes = [];
+    }
 
-    this.existingShapes.map((shape) => {
+    this.existingShapes?.map((shape) => {
       switch (shape.type) {
         case "rect":
           {
@@ -274,7 +309,7 @@ export class Engine {
         strokeStyle: this.selectedStrokeColor,
         strokeWidth: this.selectedStrokeWidth,
       };
-      this.existingShapes.push(shape);
+      this.informWsServer(shape);
       document.body.removeChild(this.input);
     });
     this.selectedTool = null;
@@ -345,73 +380,72 @@ export class Engine {
           return normalized <= 1;
         }
         break;
-      case "diamond":
-        {
-          const distanceToLine = (
-            x1: number,
-            y1: number,
-            x2: number,
-            y2: number,
-            px: number,
-            py: number
-          ) => {
-            const A = px - x1;
-            const B = py - y1;
-            const C = x2 - x1;
-            const D = y2 - y1;
+      case "diamond": {
+        const distanceToLine = (
+          x1: number,
+          y1: number,
+          x2: number,
+          y2: number,
+          px: number,
+          py: number
+        ) => {
+          const A = px - x1;
+          const B = py - y1;
+          const C = x2 - x1;
+          const D = y2 - y1;
 
-            const dot = A * C + B * D;
-            const lenSq = C * C + D * D;
+          const dot = A * C + B * D;
+          const lenSq = C * C + D * D;
 
-            if (lenSq === 0) return Math.sqrt(A * A + B * B);
+          if (lenSq === 0) return Math.sqrt(A * A + B * B);
 
-            let param = dot / lenSq;
-            param = Math.max(0, Math.min(1, param));
+          let param = dot / lenSq;
+          param = Math.max(0, Math.min(1, param));
 
-            const xx = x1 + param * C;
-            const yy = y1 + param * D;
+          const xx = x1 + param * C;
+          const yy = y1 + param * D;
 
-            const dx = px - xx;
-            const dy = py - yy;
-            return Math.sqrt(dx * dx + dy * dy);
-          };
+          const dx = px - xx;
+          const dy = py - yy;
+          return Math.sqrt(dx * dx + dy * dy);
+        };
 
-          const edge1 = distanceToLine(
-            shape.xLeft,
-            shape.yHorizontal,
-            shape.xVertical,
-            shape.yTop,
-            x,
-            y
-          );
-          const edge2 = distanceToLine(
-            shape.xVertical,
-            shape.yTop,
-            shape.xRight,
-            shape.yHorizontal,
-            x,
-            y
-          );
-          const edge3 = distanceToLine(
-            shape.xRight,
-            shape.yHorizontal,
-            shape.xVertical,
-            shape.yBottom,
-            x,
-            y
-          );
-          const edge4 = distanceToLine(
-            shape.xVertical,
-            shape.yBottom,
-            shape.xLeft,
-            shape.yHorizontal,
-            x,
-            y
-          );
+        const edge1 = distanceToLine(
+          shape.xLeft,
+          shape.yHorizontal,
+          shape.xVertical,
+          shape.yTop,
+          x,
+          y
+        );
+        const edge2 = distanceToLine(
+          shape.xVertical,
+          shape.yTop,
+          shape.xRight,
+          shape.yHorizontal,
+          x,
+          y
+        );
+        const edge3 = distanceToLine(
+          shape.xRight,
+          shape.yHorizontal,
+          shape.xVertical,
+          shape.yBottom,
+          x,
+          y
+        );
+        const edge4 = distanceToLine(
+          shape.xVertical,
+          shape.yBottom,
+          shape.xLeft,
+          shape.yHorizontal,
+          x,
+          y
+        );
 
-          const minDistance = Math.min(edge1, edge2, edge3, edge4);
-          return minDistance <= tolerance;
-        }
+        const minDistance = Math.min(edge1, edge2, edge3, edge4);
+        return minDistance <= tolerance;
+      }
       case "line":
         {
           if (
@@ -546,6 +580,7 @@ export class Engine {
       (existingShape) => existingShape !== shape
     );
     this.clearCanvas();
+    this.saveShapesToLocalStorage()
   }
 
   setBgColor(color: string) {
@@ -615,7 +650,7 @@ export class Engine {
               strokeStyle: this.selectedStrokeColor,
               strokeWidth: this.selectedStrokeWidth,
             };
-            this.existingShapes.push(shape);
+            this.informWsServer(shape);
           }
           break;
 
@@ -630,8 +665,7 @@ export class Engine {
               strokeWidth: this.selectedStrokeWidth,
               strokeStyle: this.selectedStrokeColor,
             };
-            // this.informWsServer(shape);
-            this.existingShapes.push(shape);
+            this.informWsServer(shape);
           }
           break;
 
@@ -646,8 +680,7 @@ export class Engine {
               strokeStyle: this.selectedStrokeColor,
               strokeWidth: this.selectedStrokeWidth,
             };
-            // this.informWsServer(shape);
-            this.existingShapes.push(shape);
+            this.informWsServer(shape);
           }
           break;
         case "diamond":
@@ -663,8 +696,7 @@ export class Engine {
               strokeStyle: this.selectedStrokeColor,
               strokeWidth: this.selectedStrokeWidth,
             };
-            // this.informWsServer(shape);
-            this.existingShapes.push(shape);
+            this.informWsServer(shape);
           }
           break;
         case "pencil":
