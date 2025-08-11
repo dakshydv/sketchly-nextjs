@@ -3,8 +3,18 @@ import { useEffect, useRef, useState } from "react";
 import { Engine } from "@/canvas-engine/engine";
 import { IconButton } from "./IconButton";
 import {
+  IconBrandGithub,
+  IconBrandLinkedinFilled,
+  IconBrandX,
+  IconBrightnessUp,
+  IconMoon,
+  IconWorld,
+} from "@tabler/icons-react";
+import {
   Circle,
+  Command,
   Diamond,
+  Download,
   Eraser,
   Menu,
   Minus,
@@ -12,12 +22,15 @@ import {
   Pencil,
   Pointer,
   RectangleHorizontal,
-  Trash2,
+  Share2,
+  Trash,
+  Upload,
 } from "lucide-react";
 import { Shapes, shapesMessage } from "../config/types";
 import { ColorPicker } from "./ColorPicker";
 import { StrokeIcon } from "./StrokeIcon";
 import { TextIcon } from "./TextIcon";
+import { MenuOption } from "./MenuOption";
 
 export function RoomCanvas({ roomId }: { roomId: number }) {
   const [tool, setTool] = useState<Shapes>("pointer");
@@ -27,6 +40,9 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [engine, setEngine] = useState<Engine>();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isThemeDark, setIsThemeDark] = useState<boolean>(true);
+  const [showClearConfirm, setShowClearConfirm] = useState<boolean>(false);
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -101,17 +117,7 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
   }, [selectedStrokeWidth]);
 
   function handleClear() {
-    if (
-      engine &&
-      confirm(
-        "Are you sure you want to clear the canvas? This action cannot be undone."
-      )
-    ) {
-      engine.clearLocalStorage();
-      engine.existingShapes = [];
-      engine.clearCanvas();
-      console.log("Canvas cleared");
-    }
+    setShowClearConfirm(true);
   }
 
   return (
@@ -134,10 +140,45 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
           Welcome to Infinidraw
         </div>
       )}
-      <div className="fixed flex justify-between w-screen top-8 px-6 left-1/2 transform -translate-x-1/2 z-10">
-        <div className="bg-[#23232a] backdrop-blur-sm rounded-lg py-2 px-3 flex items-center justify-center text-white">
-          <Menu />
+      {showClearConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+          <div className="bg-[#23232a] text-white rounded-lg shadow-lg p-8 flex flex-col items-center pointer-events-auto">
+            <span className="text-lg mb-4">
+              Are you sure you want to clear the canvas? This action cannot be
+              undone.
+            </span>
+            <div className="flex gap-4 mt-2">
+              <button
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+                onClick={() => {
+                  if (engine) {
+                    engine.clearLocalStorage();
+                    engine.existingShapes = [];
+                    engine.clearCanvas();
+                    console.log("Canvas cleared");
+                  }
+                  setShowClearConfirm(false);
+                }}
+              >
+                Confirm
+              </button>
+              <button
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                onClick={() => setShowClearConfirm(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
+      )}
+      <div className="fixed flex justify-between w-screen top-8 px-6 left-1/2 transform -translate-x-1/2 z-10">
+        <button
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="bg-[#23232a] backdrop-blur-sm rounded-lg py-2 px-3 flex items-center justify-center text-white hover:cursor-pointer"
+        >
+          <Menu />
+        </button>
         {/* tools selection */}
         <div className="bg-[#23232a] backdrop-blur-sm rounded-lg px-3 flex gap-1">
           <IconButton
@@ -196,7 +237,7 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
       </div>
       {/* custom options */}
       {tool !== "pointer" && tool !== "eraser" && (
-        <div className="fixed px-4 py-4 ml-4 bg-[#23232a] text-white rounded-md top-32 z-10">
+        <div className="fixed px-4 py-4 ml-4 bg-[#23232a] text-white rounded-md top-32 z-7">
           <p className="text-sm">Stroke</p>
           {/* stroke */}
           <div className="mt-1 flex gap-1">
@@ -323,15 +364,140 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
         </div>
       )}
 
-      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-10 flex gap-4">
-        <button
-          className="bg-[#ff7976] hover:bg-[#ff6864] px-6 py-3 rounded-lg flex items-center gap-2 text-white font-medium shadow-lg transition-colors"
-          onClick={handleClear}
-        >
-          <Trash2 size={20} />
-          Clear
-        </button>
-      </div>
+      {isMenuOpen && (
+        <div className="fixed px-2 py-4 ml-4 bg-[#23232a] text-white rounded-md top-20 z-10 w-54 h-[80vh] overflow-y-auto [&::-webkit-scrollbar]:w-0.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-500 [&::-webkit-scrollbar-thumb]:rounded-full">
+          <div className="border-b pb-4 border-gray-600">
+            <MenuOption
+              icon={<Command size={17} />}
+              heading="Command Palette"
+            />
+            <MenuOption
+              icon={<Trash size={17} />}
+              heading="Clear Canvas"
+              onClick={handleClear}
+            />
+            <MenuOption
+              icon={<Download size={17} />}
+              heading="Import Drawing"
+            />
+            <MenuOption icon={<Upload size={17} />} heading="Export Drawing" />
+            <MenuOption
+              icon={<Share2 size={17} />}
+              heading="Live Collaboration"
+            />
+          </div>
+          <div className="pt-4 border-b px-2 pb-4 border-gray-600">
+            <div className="flex justify-between">
+              <span className="text-sm">Theme</span>
+              <div className="flex gap-0 border-[#a7a5ff]">
+                <button
+                  className="hover:cursor-pointer"
+                  onClick={() => {
+                    setIsThemeDark(!isThemeDark);
+                  }}
+                >
+                  {isThemeDark ? (
+                    <IconBrightnessUp size={19} color="#a7a5ff" />
+                  ) : (
+                    <IconMoon size={19} color="#a7a5ff" />
+                  )}
+                </button>
+              </div>
+            </div>
+            <div className="flex-col mt-2">
+              <span className="text-sm">Canvas Background</span>
+              <div>
+                <div className="mt-1 flex gap-1">
+                  <ColorPicker
+                    background="bg-[#1a1b1e]"
+                    border={
+                      selectedBgColor === "#1a1b1e"
+                        ? "border-[#5e96d9]"
+                        : "border-none"
+                    }
+                    onClick={() => setBgColor("#1a1b1e")}
+                  />
+                  <ColorPicker
+                    background="bg-[#121212]"
+                    border={
+                      selectedBgColor === "#121212"
+                        ? "border-[#5e96d9]"
+                        : "border-none"
+                    }
+                    onClick={() => setBgColor("#121212")}
+                  />
+                  <ColorPicker
+                    background="bg-[#325252]"
+                    border={
+                      selectedBgColor === "#325252"
+                        ? "border-[#5e96d9]"
+                        : "border-none"
+                    }
+                    onClick={() => setBgColor("#325252")}
+                  />
+                  <ColorPicker
+                    background="bg-[#54658a]"
+                    border={
+                      selectedBgColor === "#54658a"
+                        ? "border-[#5e96d9]"
+                        : "border-none"
+                    }
+                    onClick={() => setBgColor("#54658a")}
+                  />
+                  <ColorPicker
+                    background="bg-[#8a5460]"
+                    border={
+                      selectedBgColor === "#8a5460"
+                        ? "border-[#5e96d9]"
+                        : "border-none"
+                    }
+                    onClick={() => setBgColor("#8a5460")}
+                  />
+                </div>
+              </div>
+              <div className="flex p-2 gap-2 mt-2 bg-[#343a40] rounded-md">
+                <span>#</span>
+                <input
+                  type="text"
+                  placeholder={selectedBgColor.slice(1)}
+                  className="w-full outline-none focus:outline-none"
+                  onBlur={(e) => setBgColor(`#${e.target.value}`)}
+                />
+              </div>
+            </div>
+          </div>
+          {/* social links */}
+          <div className="pt-4">
+            <MenuOption
+              icon={<IconBrandGithub size={17} />}
+              heading="Github"
+              theme="bg-[#ffe59a] hover:bg-[#ffe59a] text-black"
+              onClick={() =>
+                (window.location.href =
+                  "https://github.com/dakshydv/infinidraw")
+              }
+            />
+            <MenuOption
+              icon={<IconBrandX size={17} />}
+              heading="Twitter / X"
+              onClick={() => (window.location.href = "https://x.com/dakshydv_")}
+            />
+            <MenuOption
+              icon={<IconWorld size={17} />}
+              heading="Portfolio"
+              onClick={() => (window.location.href = "https://dakshyadav.com")}
+            />
+            <MenuOption
+              icon={<IconBrandLinkedinFilled size={17} />}
+              heading="LinkedIn"
+              onClick={() =>
+                (window.location.href =
+                  "https://www.linkedin.com/in/daksh-dev/")
+              }
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
