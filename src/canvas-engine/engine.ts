@@ -115,7 +115,6 @@ export class Engine {
   }
 
   clearCanvas() {
-    console.log("clearning canvas ..."); // this needs to be deleted later
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillStyle = this.selectedBgColor;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -128,9 +127,14 @@ export class Engine {
       switch (shape.type) {
         case "rect":
           {
+            this.ctx.beginPath();
             this.ctx.strokeStyle = shape.strokeStyle;
             this.ctx.lineWidth = shape.strokeWidth;
-            this.ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
+            this.ctx.roundRect(shape.x, shape.y, shape.width, shape.height, [
+              40,
+            ]);
+            this.ctx.closePath();
+            this.ctx.stroke();
           }
           break;
 
@@ -580,7 +584,7 @@ export class Engine {
       (existingShape) => existingShape !== shape
     );
     this.clearCanvas();
-    this.saveShapesToLocalStorage()
+    this.saveShapesToLocalStorage();
   }
 
   setBgColor(color: string) {
@@ -597,16 +601,30 @@ export class Engine {
     this.selectedStrokeWidth = width;
   }
 
+  // Transform client coordinates to canvas coordinates
+  private transformX(clientX: number): number {
+    const rect = this.canvas.getBoundingClientRect();
+    return clientX - rect.left;
+  }
+
+  private transformY(clientY: number): number {
+    const rect = this.canvas.getBoundingClientRect();
+    return clientY - rect.top;
+  }
+
   initMouseHanlders() {
     this.mouseClickHandler = (e) => {
+      const x = this.transformX(e.clientX);
+      const y = this.transformY(e.clientY);
+
       if (this.selectedTool === "text") {
-        this.initTextDraw(e.clientX, e.clientY);
+        this.initTextDraw(x, y);
       }
       if (this.selectedTool === "eraser") {
         this.clearCanvas();
         for (let i = 0; i < this.existingShapes.length; i++) {
           const shape = this.existingShapes[i];
-          if (this.isPointInShape(e.clientX, e.clientY, shape)) {
+          if (this.isPointInShape(x, y, shape)) {
             this.deleteShape(shape);
           }
         }
@@ -747,9 +765,12 @@ export class Engine {
         this.clearCanvas();
 
         if (this.selectedTool === "rect") {
+          this.ctx.beginPath();
           this.ctx.strokeStyle = this.selectedStrokeColor;
           this.ctx.lineWidth = this.selectedStrokeWidth;
-          this.ctx.strokeRect(this.startX, this.startY, width, height);
+          this.ctx.roundRect(this.startX, this.startY, width, height, [40]);
+          this.ctx.closePath();
+          this.ctx.stroke();
         } else if (this.selectedTool === "circle") {
           const centerX = this.startX + width / 2;
           const centerY = this.startY + height / 2;
