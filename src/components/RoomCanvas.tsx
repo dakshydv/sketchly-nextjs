@@ -43,6 +43,8 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isThemeDark, setIsThemeDark] = useState<boolean>(true);
   const [showClearConfirm, setShowClearConfirm] = useState<boolean>(false);
+  const [showShareComingSoon, setShowShareComingSoon] =
+    useState<boolean>(false);
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -172,6 +174,22 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
           </div>
         </div>
       )}
+      {showShareComingSoon && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+          <div className="bg-[#23232a] text-white rounded-lg shadow-lg p-8 flex flex-col items-center pointer-events-auto min-w-[300px]">
+            <span className="text-2xl font-bold mb-2">Coming Soon!</span>
+            <span className="mb-4 text-center">
+              Sharing and collaboration features are coming soon. Stay tuned!
+            </span>
+            <button
+              className="bg-[#a7a5ff] hover:bg-[#7b79c9] text-black px-4 py-2 rounded mt-2"
+              onClick={() => setShowShareComingSoon(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
       <div className="fixed flex justify-between w-screen top-8 px-6 left-1/2 transform -translate-x-1/2 z-10">
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -231,7 +249,10 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
             theme={tool === "eraser" ? "bg-[#403e6a] text-white" : "text-white"}
           />
         </div>
-        <button className="bg-[#a7a5ff] px-4 rounded-md flex items-center justify-center">
+        <button
+          className="bg-[#a7a5ff] px-4 rounded-md flex items-center justify-center"
+          onClick={() => setShowShareComingSoon(true)}
+        >
           Share
         </button>
       </div>
