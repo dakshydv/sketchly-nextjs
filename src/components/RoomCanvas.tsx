@@ -54,6 +54,39 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
       });
     };
 
+    const keyDownEvent = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case "1":
+          setTool("rect");
+          break;
+        case "2":
+          setTool("diamond");
+          break;
+        case "3":
+          setTool("circle");
+          break;
+        case "4":
+          setTool("line");
+          break;
+        case "5":
+          setTool("pencil");
+          break;
+        case "6":
+          setTool("arrow");
+          break;
+        case "7":
+          setTool("text");
+          break;
+        case "8":
+          setTool("eraser");
+          break;
+
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", keyDownEvent);
     updateDimensions();
     window.addEventListener("resize", updateDimensions);
 
@@ -210,6 +243,7 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
             onClick={() => setTool("rect")}
             icon={<RectangleHorizontal size={18} />}
             theme={tool === "rect" ? "bg-[#403e6a] text-white" : "text-white"}
+            number={1}
           />
           <IconButton
             onClick={() => setTool("diamond")}
@@ -217,36 +251,43 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
             theme={
               tool === "diamond" ? "bg-[#403e6a] text-white" : "text-white"
             }
+            number={2}
           />
           <IconButton
             onClick={() => setTool("circle")}
             icon={<Circle size={18} />}
             theme={tool === "circle" ? "bg-[#403e6a] text-white" : "text-white"}
+            number={3}
           />
           <IconButton
             onClick={() => setTool("line")}
             icon={<Minus size={18} fill={tool === "line" ? "#FFFFFF" : ""} />}
             theme={tool === "line" ? "bg-[#403e6a] text-white" : "text-white"}
+            number={4}
           />
           <IconButton
             onClick={() => setTool("pencil")}
             icon={<Pencil size={18} />}
             theme={tool === "pencil" ? "bg-[#403e6a] text-white" : "text-white"}
+            number={5}
           />
           <IconButton
             onClick={() => setTool("arrow")}
             icon={<MoveRight size={18} />}
             theme={tool === "arrow" ? "bg-[#403e6a] text-white" : "text-white"}
+            number={6}
           />
           <IconButton
             onClick={() => setTool("text")}
             icon={<TextIcon />}
             theme={tool === "text" ? "bg-[#403e6a] text-white" : "text-white"}
+            number={7}
           />
           <IconButton
             onClick={() => setTool("eraser")}
             icon={<Eraser size={18} />}
             theme={tool === "eraser" ? "bg-[#403e6a] text-white" : "text-white"}
+            number={8}
           />
         </div>
         <button
