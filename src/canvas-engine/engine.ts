@@ -15,7 +15,7 @@ export class Engine {
   private selectedStrokeWidth: number = 1;
   private selectedStrokeColor: string;
   private selectedBgColor: string;
-  private selectedTool: Shapes | null;
+  private selectedTool: Shapes | null = "pointer";
   private freeDrawCords: Cords[] = [];
   private input: HTMLTextAreaElement;
   private mouseDownHandler: (e: MouseEvent) => void;
@@ -118,7 +118,56 @@ export class Engine {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillStyle = this.selectedBgColor;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    console.log(this.existingShapes); // this needs to be deleted later
+    if (this.selectedTool === "pointer" && this.existingShapes.length <= 0) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(80, 150);
+      this.ctx.quadraticCurveTo(50, 150, 50, 95);
+      this.ctx.lineWidth = 2;
+      this.ctx.strokeStyle = "#7c7c7c";
+      this.ctx.stroke();
+
+      this.ctx.beginPath();
+      this.ctx.moveTo(43, 91);
+      this.ctx.lineTo(50, 78);
+      this.ctx.lineTo(63, 90);
+      this.ctx.closePath(); 
+      this.ctx.fillStyle = "#7c7c7c";
+      this.ctx.fill();
+      this.ctx.stroke(); 
+
+      this.ctx.font = "24px 'Caveat', cursive";
+      this.ctx.fillStyle = "#7c7c7c";
+      this.ctx.fillText("Export, preferences, languages, ...", 85, 152);
+
+
+      this.ctx.beginPath();
+      this.ctx.moveTo(window.innerWidth / 2 + 75, 170);
+      this.ctx.quadraticCurveTo(window.innerWidth / 2 + 125, 150, window.innerWidth / 2 + 85, 95);
+      this.ctx.strokeStyle = "#7c7c7c";
+      this.ctx.stroke();
+
+      this.ctx.beginPath();
+      this.ctx.moveTo(window.innerWidth / 2 + 75, 95);
+      this.ctx.lineTo(window.innerWidth / 2 + 75, 80);
+      this.ctx.lineTo(window.innerWidth / 2 + 95, 90);
+      this.ctx.closePath(); 
+      this.ctx.fillStyle = "#7c7c7c";
+      this.ctx.fill();
+      this.ctx.stroke(); 
+
+      this.ctx.font = "24px 'Caveat', cursive";
+      this.ctx.fillStyle = "#7c7c7c";
+      this.ctx.fillText("Pick a tool &", window.innerWidth / 2 - 50, 165);
+      this.ctx.fillText("Start drawing!", window.innerWidth / 2 - 55, 190);
+      
+      this.ctx.font = "900 55px 'Caveat', cursive";
+      this.ctx.fillStyle = "#e1dfff";
+      this.ctx.fillText("INFINIDRAW", window.innerWidth / 2 - 160, window.innerHeight / 2);
+
+      this.ctx.font = "24px 'Caveat', cursive";
+      this.ctx.fillStyle = "#7c7c7c";
+      this.ctx.fillText("All your data is saved locally in your browser", window.innerWidth / 2 - 180, window.innerHeight / 2 + 50);
+    }
     if (this.existingShapes === undefined) {
       this.existingShapes = [];
     }

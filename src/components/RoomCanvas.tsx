@@ -134,8 +134,8 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
 
   useEffect(() => {
     if (engine) {
-      console.log(`changing tool to ${tool}`);
       engine.setTool(tool);
+      engine.clearCanvas();
     }
   }, [tool, engine]);
 
@@ -223,7 +223,7 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
           </div>
         </div>
       )}
-      <div className="fixed flex justify-between w-screen top-8 px-6 left-1/2 transform -translate-x-1/2 z-10">
+      <div className="fixed flex justify-between w-full top-8 px-6 left-1/2 transform -translate-x-1/2 z-10">
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="bg-[#23232a] backdrop-blur-sm rounded-lg py-2 px-3 flex items-center justify-center text-white hover:cursor-pointer"
