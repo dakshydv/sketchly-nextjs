@@ -31,6 +31,7 @@ import { ColorPicker } from "./ColorPicker";
 import { StrokeIcon } from "./StrokeIcon";
 import { TextIcon } from "./TextIcon";
 import { MenuOption } from "./MenuOption";
+import { SocialLink } from "./SocialLinks";
 
 export function RoomCanvas({ roomId }: { roomId: number }) {
   const [tool, setTool] = useState<Shapes>("pointer");
@@ -151,6 +152,11 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
     engine?.setStrokeWidth(selectedStrokeWidth);
   }, [selectedStrokeWidth]);
 
+  useEffect(() => {
+    engine?.setBgColor(isThemeDark ? "#121212" : "#ffffff")
+    engine?.setTheme(isThemeDark ? "dark" : "light");
+  }, [isThemeDark])
+
   function handleClear() {
     setShowClearConfirm(true);
   }
@@ -223,75 +229,75 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
           </div>
         </div>
       )}
-      <div className="fixed flex justify-between w-full top-8 px-6 left-1/2 transform -translate-x-1/2 z-10">
+      <div className="fixed flex justify-between w-full top-5 px-6 left-1/2 transform -translate-x-1/2 z-10">
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="bg-[#23232a] backdrop-blur-sm rounded-lg py-2 px-3 flex items-center justify-center text-white hover:cursor-pointer"
+          className={`${isThemeDark ? "bg-[#23232a] text-white" : "bg-[#ececf4] text-black"} backdrop-blur-sm rounded-lg h-10 py-2 px-3 flex items-center justify-center hover:cursor-pointer`}
         >
           <Menu />
         </button>
         {/* tools selection */}
-        <div className="bg-[#23232a] backdrop-blur-sm rounded-lg px-3 flex gap-1">
+        <div className={`${isThemeDark ? "bg-[#23232a] text-white": "bg-[#ffffff] text-black outline outline-gray-200 "} backdrop-blur-sm h-13 rounded-lg px-5 flex gap-3`}>
           <IconButton
             onClick={() => setTool("pointer")}
             icon={<Pointer size={18} />}
             theme={
-              tool === "pointer" ? "bg-[#403e6a] text-white" : "text-white"
+              tool === "pointer" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""
             }
           />
           <IconButton
             onClick={() => setTool("rect")}
-            icon={<RectangleHorizontal size={18} />}
-            theme={tool === "rect" ? "bg-[#403e6a] text-white" : "text-white"}
+            icon={<RectangleHorizontal size={15} />}
+            theme={tool === "rect" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""}
             number={1}
           />
           <IconButton
             onClick={() => setTool("diamond")}
-            icon={<Diamond size={18} />}
+            icon={<Diamond size={15} />}
             theme={
-              tool === "diamond" ? "bg-[#403e6a] text-white" : "text-white"
+              tool === "diamond" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""
             }
             number={2}
           />
           <IconButton
             onClick={() => setTool("circle")}
-            icon={<Circle size={18} />}
-            theme={tool === "circle" ? "bg-[#403e6a] text-white" : "text-white"}
+            icon={<Circle size={15} />}
+            theme={tool === "circle" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""}
             number={3}
           />
           <IconButton
             onClick={() => setTool("line")}
             icon={<Minus size={18} fill={tool === "line" ? "#FFFFFF" : ""} />}
-            theme={tool === "line" ? "bg-[#403e6a] text-white" : "text-white"}
+            theme={tool === "line" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""}
             number={4}
           />
           <IconButton
             onClick={() => setTool("pencil")}
-            icon={<Pencil size={18} />}
-            theme={tool === "pencil" ? "bg-[#403e6a] text-white" : "text-white"}
+            icon={<Pencil size={15} />}
+            theme={tool === "pencil" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""}
             number={5}
           />
           <IconButton
             onClick={() => setTool("arrow")}
             icon={<MoveRight size={18} />}
-            theme={tool === "arrow" ? "bg-[#403e6a] text-white" : "text-white"}
+            theme={tool === "arrow" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""}
             number={6}
           />
           <IconButton
             onClick={() => setTool("text")}
             icon={<TextIcon />}
-            theme={tool === "text" ? "bg-[#403e6a] text-white" : "text-white"}
+            theme={tool === "text" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""}
             number={7}
           />
           <IconButton
             onClick={() => setTool("eraser")}
-            icon={<Eraser size={18} />}
-            theme={tool === "eraser" ? "bg-[#403e6a] text-white" : "text-white"}
+            icon={<Eraser size={15} />}
+            theme={tool === "eraser" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""}
             number={8}
           />
         </div>
         <button
-          className="bg-[#a7a5ff] px-4 rounded-md flex items-center justify-center"
+          className="bg-[#a7a5ff] px-4 rounded-md h-10 flex items-center justify-center"
           onClick={() => setShowShareComingSoon(true)}
         >
           Share
@@ -427,25 +433,29 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
       )}
 
       {isMenuOpen && (
-        <div className="fixed px-2 py-4 ml-4 bg-[#23232a] text-white rounded-md top-20 z-10 w-54 h-[80vh] overflow-y-auto [&::-webkit-scrollbar]:w-0.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-500 [&::-webkit-scrollbar-thumb]:rounded-full">
-          <div className="border-b pb-4 border-gray-600">
+        <div className={`fixed px-2 py-4 ml-4 ${isThemeDark ? "bg-[#23232a] text-white" : "bg-[#ffffff] text-black"} rounded-md top-20 z-10 w-54 h-[80vh] overflow-y-auto [&::-webkit-scrollbar]:w-0.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-500 [&::-webkit-scrollbar-thumb]:rounded-full`}>
+          <div className={`border-b pb-4 ${isThemeDark ? "border-gray-600" : "border-gray-200"}`}>
             <MenuOption
               icon={<Command size={17} />}
               heading="Command Palette"
+              theme={isThemeDark ? "hover:bg-[#31303b]" : "hover:bg-[#e0dfff]"}
             />
             <MenuOption
               icon={<Trash size={17} />}
               heading="Clear Canvas"
               onClick={handleClear}
+              theme={isThemeDark ? "hover:bg-[#31303b]" : "hover:bg-[#e0dfff]"}
             />
             <MenuOption
               icon={<Download size={17} />}
               heading="Import Drawing"
+              theme={isThemeDark ? "hover:bg-[#31303b]" : "hover:bg-[#e0dfff]"}
             />
-            <MenuOption icon={<Upload size={17} />} heading="Export Drawing" />
+            <MenuOption icon={<Upload size={17} />} heading="Export Drawing" theme={isThemeDark ? "hover:bg-[#31303b]" : "hover:bg-[#e0dfff]"} />
             <MenuOption
               icon={<Share2 size={17} />}
               heading="Live Collaboration"
+              theme={isThemeDark ? "hover:bg-[#31303b]" : "hover:bg-[#e0dfff]"}
             />
           </div>
           <div className="pt-4 border-b px-2 pb-4 border-gray-600">
@@ -469,55 +479,102 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
             <div className="flex-col mt-2">
               <span className="text-sm">Canvas Background</span>
               <div>
-                <div className="mt-1 flex gap-1">
-                  <ColorPicker
-                    background="bg-[#1a1b1e]"
-                    border={
-                      selectedBgColor === "#1a1b1e"
-                        ? "border-[#5e96d9]"
-                        : "border-none"
-                    }
-                    onClick={() => setBgColor("#1a1b1e")}
-                  />
+                {isThemeDark && <div className="mt-1 flex gap-1">
                   <ColorPicker
                     background="bg-[#121212]"
                     border={
                       selectedBgColor === "#121212"
                         ? "border-[#5e96d9]"
-                        : "border-none"
+                        : "border-white"
                     }
                     onClick={() => setBgColor("#121212")}
                   />
                   <ColorPicker
-                    background="bg-[#325252]"
+                    background="bg-[#161718]"
                     border={
-                      selectedBgColor === "#325252"
+                      selectedBgColor === "#161718"
                         ? "border-[#5e96d9]"
-                        : "border-none"
+                        : "border-white"
                     }
-                    onClick={() => setBgColor("#325252")}
+                    onClick={() => setBgColor("#161718")}
                   />
                   <ColorPicker
-                    background="bg-[#54658a]"
+                    background="bg-[#13171b]"
                     border={
-                      selectedBgColor === "#54658a"
+                      selectedBgColor === "#13171b"
                         ? "border-[#5e96d9]"
-                        : "border-none"
+                        : "border-white"
                     }
-                    onClick={() => setBgColor("#54658a")}
+                    onClick={() => setBgColor("#13171b")}
                   />
                   <ColorPicker
-                    background="bg-[#8a5460]"
+                    background="bg-[#181604]"
                     border={
-                      selectedBgColor === "#8a5460"
+                      selectedBgColor === "#181604"
                         ? "border-[#5e96d9]"
-                        : "border-none"
+                        : "border-white"
                     }
-                    onClick={() => setBgColor("#8a5460")}
+                    onClick={() => setBgColor("#181604")}
                   />
-                </div>
+                  <ColorPicker
+                    background="bg-[#1b1715]"
+                    border={
+                      selectedBgColor === "#1b1715"
+                        ? "border-[#5e96d9]"
+                        : "border-white"
+                    }
+                    onClick={() => setBgColor("#1b1715")}
+                  />
+                </div>}
+                {!isThemeDark && <div className="mt-1 flex gap-1">
+                  <ColorPicker
+                    background="bg-[#ffffff]"
+                    border={
+                      selectedBgColor === "#ffffff"
+                        ? "border-[#5e96d9]"
+                        : "border-gray-200"
+                    }
+                    onClick={() => setBgColor("#ffffff")}
+                  />
+                  <ColorPicker
+                    background="bg-[#f8f9fa]"
+                    border={
+                      selectedBgColor === "#f8f9fa"
+                        ? "border-[#5e96d9]"
+                        : "border-gray-200"
+                    }
+                    onClick={() => setBgColor("#f8f9fa")}
+                  />
+                  <ColorPicker
+                    background="bg-[#f5fafe]"
+                    border={
+                      selectedBgColor === "#f5fafe"
+                        ? "border-[#5e96d9]"
+                        : "border-gray-200"
+                    }
+                    onClick={() => setBgColor("#fefce8")}
+                  />
+                  <ColorPicker
+                    background="bg-[#fefce8]"
+                    border={
+                      selectedBgColor === "#fefce8"
+                        ? "border-[#5e96d9]"
+                        : "border-gray-200"
+                    }
+                    onClick={() => setBgColor("#fefce8")}
+                  />
+                  <ColorPicker
+                    background="bg-[#fdf8f6]"
+                    border={
+                      selectedBgColor === "#fdf8f6"
+                        ? "border-[#5e96d9]"
+                        : "border-gray-200"
+                    }
+                    onClick={() => setBgColor("#fdf8f6")}
+                  />
+                </div>}
               </div>
-              <div className="flex p-2 gap-2 mt-2 bg-[#343a40] rounded-md">
+              <div className={`flex p-2 gap-2 mt-2 ${isThemeDark ? "bg-[#343a40]" : "bg-[#e0dfff]"} rounded-md`}>
                 <span>#</span>
                 <input
                   type="text"
@@ -530,32 +587,29 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
           </div>
           {/* social links */}
           <div className="pt-4">
-            <MenuOption
+            <SocialLink
               icon={<IconBrandGithub size={17} />}
               heading="Github"
-              theme="bg-[#ffe59a] hover:bg-[#ffe59a] text-black"
-              onClick={() =>
-                (window.location.href =
-                  "https://github.com/dakshydv/infinidraw")
-              }
+              theme={`bg-[#ffe59a] ${isThemeDark ? "hover:bg-[#ffe59a]" : "hover:bg-[#e0dfff]"} text-black`}
+              href="https://github.com/dakshydv/infinidraw"
             />
-            <MenuOption
+            <SocialLink
               icon={<IconBrandX size={17} />}
               heading="Twitter / X"
-              onClick={() => (window.location.href = "https://x.com/dakshydv_")}
+              href="https://x.com/dakshydv_"
+              theme={isThemeDark ? "hover:bg-[#31303b]" : "hover:bg-[#e0dfff]"}
             />
-            <MenuOption
+            <SocialLink
               icon={<IconWorld size={17} />}
               heading="Portfolio"
-              onClick={() => (window.location.href = "https://dakshyadav.com")}
+              href="https://dakshyadav.com"
+              theme={isThemeDark ? "hover:bg-[#31303b]" : "hover:bg-[#e0dfff]"}
             />
-            <MenuOption
+            <SocialLink
               icon={<IconBrandLinkedinFilled size={17} />}
               heading="LinkedIn"
-              onClick={() =>
-                (window.location.href =
-                  "https://www.linkedin.com/in/daksh-dev/")
-              }
+              href="https://www.linkedin.com/in/daksh-dev/"
+              theme={isThemeDark ? "hover:bg-[#31303b]" : "hover:bg-[#e0dfff]"}
             />
           </div>
         </div>

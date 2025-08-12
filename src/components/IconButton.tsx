@@ -18,7 +18,7 @@ export function IconButton({
     >
       {icon}
       {number && (
-        <span className="absolute bottom-0 right-0 text-xs text-white  rounded-full w-4 h-4 flex items-center justify-center">
+        <span className="absolute bottom-0 right-0 text-xs rounded-full w-4 h-4 flex items-center justify-center">
           {number}
         </span>
       )}

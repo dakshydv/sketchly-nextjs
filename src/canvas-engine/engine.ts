@@ -16,6 +16,7 @@ export class Engine {
   private selectedStrokeColor: string;
   private selectedBgColor: string;
   private selectedTool: Shapes | null = "pointer";
+  private canvasTheme: string;
   private freeDrawCords: Cords[] = [];
   private input: HTMLTextAreaElement;
   private mouseDownHandler: (e: MouseEvent) => void;
@@ -161,7 +162,7 @@ export class Engine {
       this.ctx.fillText("Start drawing!", window.innerWidth / 2 - 55, 190);
       
       this.ctx.font = "900 55px 'Caveat', cursive";
-      this.ctx.fillStyle = "#e1dfff";
+      this.ctx.fillStyle = this.canvasTheme === "dark" ? "#190064" : "#e1dfff" ;
       this.ctx.fillText("INFINIDRAW", window.innerWidth / 2 - 160, window.innerHeight / 2);
 
       this.ctx.font = "24px 'Caveat', cursive";
@@ -637,9 +638,12 @@ export class Engine {
   }
 
   setBgColor(color: string) {
-    console.log(`bg color changed to ${color} in engine`); // this needs to be deleted later
     this.selectedBgColor = color;
     this.clearCanvas();
+  }
+
+  setTheme(color: string) {
+    this.canvasTheme = color;
   }
 
   setStrokeColor(color: string) {

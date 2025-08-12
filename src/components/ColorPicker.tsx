@@ -9,7 +9,7 @@ export function ColorPicker({
 }) {
   return (
     <button onClick={onClick} className={`border ${border} p-[1px] hover:cursor-pointer rounded-md`}>
-      <div className={`w-5 h-5 rounded-sm ${background}`}></div>
+      <div className={`w-7 h-7 rounded-sm ${background}`}></div>
     </button>
   );
 }
