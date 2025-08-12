@@ -18,6 +18,7 @@ import {
   Eraser,
   Menu,
   Minus,
+  MousePointer,
   MoveRight,
   Pencil,
   Pointer,
@@ -58,27 +59,36 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
     const keyDownEvent = (e: KeyboardEvent) => {
       switch (e.key) {
         case "1":
-          setTool("rect");
+          setTool("select");
           break;
         case "2":
-          setTool("diamond");
+          setTool("pointer");
           break;
         case "3":
-          setTool("circle");
+          setTool("rect");
           break;
         case "4":
-          setTool("line");
+          setTool("diamond");
           break;
         case "5":
-          setTool("pencil");
+          setTool("circle");
           break;
         case "6":
-          setTool("arrow");
+          setTool("line");
           break;
         case "7":
-          setTool("text");
+          setTool("pencil");
           break;
         case "8":
+          setTool("arrow");
+          break;
+        case "9":
+          setTool("text");
+          break;
+        case "0":
+          setTool("eraser");
+          break;
+        case "10":
           setTool("eraser");
           break;
 
@@ -239,17 +249,26 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
         {/* tools selection */}
         <div className={`${isThemeDark ? "bg-[#23232a] text-white": "bg-[#ffffff] text-black outline outline-gray-200 "} backdrop-blur-sm h-13 rounded-lg px-5 flex gap-3`}>
           <IconButton
+            onClick={() => setTool("select")}
+            icon={<MousePointer size={18} />}
+            theme={
+              tool === "select" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""
+            }
+            number={1}
+          />
+          <IconButton
             onClick={() => setTool("pointer")}
             icon={<Pointer size={18} />}
             theme={
               tool === "pointer" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""
             }
+            number={2}
           />
           <IconButton
             onClick={() => setTool("rect")}
             icon={<RectangleHorizontal size={15} />}
             theme={tool === "rect" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""}
-            number={1}
+            number={3}
           />
           <IconButton
             onClick={() => setTool("diamond")}
@@ -257,43 +276,43 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
             theme={
               tool === "diamond" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""
             }
-            number={2}
+            number={4}
           />
           <IconButton
             onClick={() => setTool("circle")}
             icon={<Circle size={15} />}
             theme={tool === "circle" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""}
-            number={3}
+            number={5}
           />
           <IconButton
             onClick={() => setTool("line")}
             icon={<Minus size={18} fill={tool === "line" ? "#FFFFFF" : ""} />}
             theme={tool === "line" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""}
-            number={4}
+            number={6}
           />
           <IconButton
             onClick={() => setTool("pencil")}
             icon={<Pencil size={15} />}
             theme={tool === "pencil" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""}
-            number={5}
+            number={7}
           />
           <IconButton
             onClick={() => setTool("arrow")}
             icon={<MoveRight size={18} />}
             theme={tool === "arrow" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""}
-            number={6}
+            number={8}
           />
           <IconButton
             onClick={() => setTool("text")}
             icon={<TextIcon />}
             theme={tool === "text" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""}
-            number={7}
+            number={9}
           />
           <IconButton
             onClick={() => setTool("eraser")}
             icon={<Eraser size={15} />}
             theme={tool === "eraser" ? `${isThemeDark ? "bg-[#403e6a]" : "bg-[#e0dfff]"}` : ""}
-            number={8}
+            number={10}
           />
         </div>
         <button

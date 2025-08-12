@@ -47,7 +47,7 @@ export type shapesMessage =
       style: string;
       x: number;
       y: number;
-      width: number,
+      width: number;
       strokeStyle: string;
       strokeWidth: number;
     }
@@ -69,17 +69,18 @@ export type shapesMessage =
       strokeStyle: string;
       strokeWidth: number;
     }
-    | {
+  | {
       type: "arrow";
       fromX: number;
       toX: number;
       fromY: number;
       toY: number;
       strokeStyle: string;
-      strokeWidth: number
-    }
+      strokeWidth: number;
+    };
 
 export type Shapes =
+  | "select"
   | "rect"
   | "diamond"
   | "circle"
