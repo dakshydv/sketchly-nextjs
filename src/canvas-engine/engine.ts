@@ -131,19 +131,23 @@ export class Engine {
       this.ctx.moveTo(43, 91);
       this.ctx.lineTo(50, 78);
       this.ctx.lineTo(63, 90);
-      this.ctx.closePath(); 
+      this.ctx.closePath();
       this.ctx.fillStyle = "#7c7c7c";
       this.ctx.fill();
-      this.ctx.stroke(); 
+      this.ctx.stroke();
 
       this.ctx.font = "24px 'Caveat', cursive";
       this.ctx.fillStyle = "#7c7c7c";
       this.ctx.fillText("Export, preferences, languages, ...", 85, 152);
 
-
       this.ctx.beginPath();
       this.ctx.moveTo(window.innerWidth / 2 + 75, 170);
-      this.ctx.quadraticCurveTo(window.innerWidth / 2 + 125, 150, window.innerWidth / 2 + 85, 95);
+      this.ctx.quadraticCurveTo(
+        window.innerWidth / 2 + 125,
+        150,
+        window.innerWidth / 2 + 85,
+        95
+      );
       this.ctx.strokeStyle = "#7c7c7c";
       this.ctx.stroke();
 
@@ -151,23 +155,31 @@ export class Engine {
       this.ctx.moveTo(window.innerWidth / 2 + 75, 95);
       this.ctx.lineTo(window.innerWidth / 2 + 75, 80);
       this.ctx.lineTo(window.innerWidth / 2 + 95, 90);
-      this.ctx.closePath(); 
+      this.ctx.closePath();
       this.ctx.fillStyle = "#7c7c7c";
       this.ctx.fill();
-      this.ctx.stroke(); 
+      this.ctx.stroke();
 
       this.ctx.font = "24px 'Caveat', cursive";
       this.ctx.fillStyle = "#7c7c7c";
       this.ctx.fillText("Pick a tool &", window.innerWidth / 2 - 50, 165);
       this.ctx.fillText("Start drawing!", window.innerWidth / 2 - 55, 190);
-      
+
       this.ctx.font = "900 55px 'Caveat', cursive";
-      this.ctx.fillStyle = this.canvasTheme === "dark" ? "#190064" : "#e1dfff" ;
-      this.ctx.fillText("INFINIDRAW", window.innerWidth / 2 - 160, window.innerHeight / 2);
+      this.ctx.fillStyle = this.canvasTheme === "dark" ? "#190064" : "#e1dfff";
+      this.ctx.fillText(
+        "INFINIDRAW",
+        window.innerWidth / 2 - 160,
+        window.innerHeight / 2
+      );
 
       this.ctx.font = "24px 'Caveat', cursive";
       this.ctx.fillStyle = "#7c7c7c";
-      this.ctx.fillText("All your data is saved locally in your browser", window.innerWidth / 2 - 180, window.innerHeight / 2 + 50);
+      this.ctx.fillText(
+        "All your data is saved locally in your browser",
+        window.innerWidth / 2 - 180,
+        window.innerHeight / 2 + 50
+      );
     }
     if (this.existingShapes === undefined) {
       this.existingShapes = [];
@@ -654,7 +666,6 @@ export class Engine {
     this.selectedStrokeWidth = width;
   }
 
-  // Transform client coordinates to canvas coordinates
   private transformX(clientX: number): number {
     const rect = this.canvas.getBoundingClientRect();
     return clientX - rect.left;
@@ -690,8 +701,8 @@ export class Engine {
         return;
       }
       this.clicked = true;
-      this.startX = e.clientX;
-      this.startY = e.clientY;
+      this.startX = this.transformX(e.clientX);
+      this.startY = this.transformY(e.clientY);
       if (this.selectedTool === "pencil") {
         this.freeDrawCords.push({
           x: this.startX,
@@ -705,9 +716,18 @@ export class Engine {
         return;
       }
       this.clicked = false;
+
+      // If pointer tool was used for dragging, save changes
+      if (this.selectedTool === "pointer") {
+        this.saveShapesToLocalStorage();
+        return;
+      }
+
       let shape: shapesMessage | null = null;
-      const width = e.clientX - this.startX;
-      const height = e.clientY - this.startY;
+      const endX = this.transformX(e.clientX);
+      const endY = this.transformY(e.clientY);
+      const width = endX - this.startX;
+      const height = endY - this.startY;
 
       switch (this.selectedTool) {
         case "rect":
@@ -731,8 +751,8 @@ export class Engine {
               type: "circle",
               centerX: this.startX + width / 2,
               centerY: this.startY + height / 2,
-              radiusx: Math.abs((this.startX - e.clientX) / 2),
-              radiusY: Math.abs((this.startY - e.clientY) / 2),
+              radiusx: Math.abs((this.startX - endX) / 2),
+              radiusY: Math.abs((this.startY - endY) / 2),
               strokeWidth: this.selectedStrokeWidth,
               strokeStyle: this.selectedStrokeColor,
             };
@@ -746,8 +766,8 @@ export class Engine {
               type: "line",
               startX: this.startX,
               startY: this.startY,
-              endX: e.clientX,
-              endY: e.clientY,
+              endX: endX,
+              endY: endY,
               strokeStyle: this.selectedStrokeColor,
               strokeWidth: this.selectedStrokeWidth,
             };
@@ -759,11 +779,11 @@ export class Engine {
             shape = {
               type: "diamond",
               xLeft: this.startX,
-              xRight: e.clientX,
-              yHorizontal: (this.startY + e.clientY) / 2,
-              xVertical: (this.startX + e.clientX) / 2,
+              xRight: endX,
+              yHorizontal: (this.startY + endY) / 2,
+              xVertical: (this.startX + endX) / 2,
               yTop: this.startY,
-              yBottom: e.clientY,
+              yBottom: endY,
               strokeStyle: this.selectedStrokeColor,
               strokeWidth: this.selectedStrokeWidth,
             };
@@ -792,8 +812,8 @@ export class Engine {
               type: "arrow",
               fromX: this.startX,
               fromY: this.startY,
-              toX: e.clientX,
-              toY: e.clientY,
+              toX: endX,
+              toY: endY,
               strokeStyle: this.selectedStrokeColor,
               strokeWidth: this.selectedStrokeWidth,
             };
@@ -813,91 +833,157 @@ export class Engine {
       }
 
       if (this.clicked) {
-        const width = e.clientX - this.startX;
-        const height = e.clientY - this.startY;
+        const currentX = this.transformX(e.clientX);
+        const currentY = this.transformY(e.clientY);
+        const width = currentX - this.startX;
+        const height = currentY - this.startY;
         this.clearCanvas();
 
-        if (this.selectedTool === "rect") {
-          this.ctx.beginPath();
-          this.ctx.strokeStyle = this.selectedStrokeColor;
-          this.ctx.lineWidth = this.selectedStrokeWidth;
-          this.ctx.roundRect(this.startX, this.startY, width, height, [40]);
-          this.ctx.closePath();
-          this.ctx.stroke();
-        } else if (this.selectedTool === "circle") {
-          const centerX = this.startX + width / 2;
-          const centerY = this.startY + height / 2;
-          const radiusX = Math.abs(width / 2);
-          const radiusY = Math.abs(height / 2);
-          this.ctx.beginPath();
-          this.ctx.strokeStyle = this.selectedStrokeColor;
-          this.ctx.lineWidth = this.selectedStrokeWidth;
-          this.ctx.ellipse(
-            centerX,
-            centerY,
-            radiusX,
-            radiusY,
-            0,
-            0,
-            2 * Math.PI
-          );
-          this.ctx.stroke();
-          this.ctx.closePath();
-        } else if (this.selectedTool === "line") {
-          console.log("line inside functions"); // this needs to be deleted later
-          this.ctx.beginPath();
-          this.ctx.strokeStyle = this.selectedStrokeColor;
-          this.ctx.lineWidth = this.selectedStrokeWidth;
-          this.ctx.moveTo(this.startX, this.startY);
-          this.ctx.lineTo(e.clientX, e.clientY);
-          this.ctx.stroke();
-          this.ctx.closePath();
-        } else if (this.selectedTool === "diamond") {
-          const xLeft = this.startX;
-          const xRight = e.clientX;
-          const yHorizontal = (this.startY + e.clientY) / 2;
-          const xVertical = (this.startX + e.clientX) / 2;
-          const yTop = this.startY;
-          const yBottom = e.clientY;
+        switch (this.selectedTool) {
+          case "rect":
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = this.selectedStrokeColor;
+            this.ctx.lineWidth = this.selectedStrokeWidth;
+            this.ctx.roundRect(this.startX, this.startY, width, height, [40]);
+            this.ctx.closePath();
+            this.ctx.stroke();
+            break;
+          case "circle":
+            const centerX = this.startX + width / 2;
+            const centerY = this.startY + height / 2;
+            const radiusX = Math.abs(width / 2);
+            const radiusY = Math.abs(height / 2);
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = this.selectedStrokeColor;
+            this.ctx.lineWidth = this.selectedStrokeWidth;
+            this.ctx.ellipse(
+              centerX,
+              centerY,
+              radiusX,
+              radiusY,
+              0,
+              0,
+              2 * Math.PI
+            );
+            this.ctx.stroke();
+            this.ctx.closePath();
+            break;
+          case "line":
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = this.selectedStrokeColor;
+            this.ctx.lineWidth = this.selectedStrokeWidth;
+            this.ctx.moveTo(this.startX, this.startY);
+            this.ctx.lineTo(currentX, currentY);
+            this.ctx.stroke();
+            this.ctx.closePath();
+            break;
+          case "diamond":
+            const xLeft = this.startX;
+            const xRight = currentX;
+            const yHorizontal = (this.startY + currentY) / 2;
+            const xVertical = (this.startX + currentX) / 2;
+            const yTop = this.startY;
+            const yBottom = currentY;
 
-          this.ctx.beginPath();
-          this.ctx.strokeStyle = this.selectedStrokeColor;
-          this.ctx.lineWidth = this.selectedStrokeWidth;
-          this.ctx.moveTo(xLeft, yHorizontal);
-          this.ctx.lineTo(xVertical, yTop);
-          this.ctx.lineTo(xRight, yHorizontal);
-          this.ctx.lineTo(xVertical, yBottom);
-          this.ctx.lineTo(xLeft, yHorizontal);
-          this.ctx.stroke();
-          this.ctx.closePath();
-        } else if (this.selectedTool === "pencil") {
-          this.freeDrawCords.push({
-            x: e.clientX,
-            y: e.clientY,
-          });
-          this.clearCanvas();
-          this.initPencilDraw(this.freeDrawCords, this.selectedStrokeWidth);
-        } else if (this.selectedTool === "arrow") {
-          const headLength = 20;
-          const dx = e.clientX - this.startX;
-          const dy = e.clientY - this.startY;
-          const angle = Math.atan2(dy, dx);
-          this.ctx.beginPath();
-          this.ctx.strokeStyle = this.selectedStrokeColor;
-          this.ctx.lineWidth = this.selectedStrokeWidth;
-          this.ctx.moveTo(this.startX, this.startY);
-          this.ctx.lineTo(e.clientX, e.clientY);
-          this.ctx.lineTo(
-            e.clientX - headLength * Math.cos(angle - Math.PI / 6),
-            e.clientY - headLength * Math.sin(angle - Math.PI / 6)
-          );
-          this.ctx.moveTo(e.clientX, e.clientY);
-          this.ctx.lineTo(
-            e.clientX - headLength * Math.cos(angle + Math.PI / 6),
-            e.clientY - headLength * Math.sin(angle + Math.PI / 6)
-          );
-          this.ctx.stroke();
-          this.ctx.closePath();
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = this.selectedStrokeColor;
+            this.ctx.lineWidth = this.selectedStrokeWidth;
+            this.ctx.moveTo(xLeft, yHorizontal);
+            this.ctx.lineTo(xVertical, yTop);
+            this.ctx.lineTo(xRight, yHorizontal);
+            this.ctx.lineTo(xVertical, yBottom);
+            this.ctx.lineTo(xLeft, yHorizontal);
+            this.ctx.stroke();
+            this.ctx.closePath();
+            break;
+          case "pencil":
+            this.freeDrawCords.push({
+              x: this.transformX(e.clientX),
+              y: this.transformY(e.clientY),
+            });
+            this.clearCanvas();
+            this.initPencilDraw(this.freeDrawCords, this.selectedStrokeWidth);
+            break;
+          case "arrow":
+            const headLength = 20;
+            const endX = this.transformX(e.clientX);
+            const endY = this.transformY(e.clientY);
+            const dx = endX - this.startX;
+            const dy = endY - this.startY;
+            const angle = Math.atan2(dy, dx);
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = this.selectedStrokeColor;
+            this.ctx.lineWidth = this.selectedStrokeWidth;
+            this.ctx.moveTo(this.startX, this.startY);
+            this.ctx.lineTo(endX, endY);
+            this.ctx.lineTo(
+              endX - headLength * Math.cos(angle - Math.PI / 6),
+              endY - headLength * Math.sin(angle - Math.PI / 6)
+            );
+            this.ctx.moveTo(endX, endY);
+            this.ctx.lineTo(
+              endX - headLength * Math.cos(angle + Math.PI / 6),
+              endY - headLength * Math.sin(angle + Math.PI / 6)
+            );
+            this.ctx.stroke();
+            this.ctx.closePath();
+            break;
+          case "pointer":
+            const offSetX = currentX - this.startX;
+            const offSetY = currentY - this.startY;
+
+            this.existingShapes.forEach((shape) => {
+              switch (shape.type) {
+                case "rect":
+                  shape.x += offSetX;
+                  shape.y += offSetY;
+                  break;
+                case "circle":
+                  shape.centerX += offSetX;
+                  shape.centerY += offSetY;
+                  break;
+                case "line":
+                  shape.startX += offSetX;
+                  shape.startY += offSetY;
+                  shape.endX += offSetX;
+                  shape.endY += offSetY;
+                  break;
+                case "text":
+                  shape.x += offSetX;
+                  shape.y += offSetY;
+                  break;
+                case "diamond":
+                  shape.xLeft += offSetX;
+                  shape.xRight += offSetX;
+                  shape.yHorizontal += offSetY;
+                  shape.xVertical += offSetX;
+                  shape.yTop += offSetY;
+                  shape.yBottom += offSetY;
+                  break;
+                case "pencil":
+                  shape.cords.forEach((cord) => {
+                    cord.x += offSetX;
+                    cord.y += offSetY;
+                  });
+                  break;
+                case "arrow":
+                  shape.fromX += offSetX;
+                  shape.toX += offSetX;
+                  shape.fromY += offSetY;
+                  shape.toY += offSetY;
+                  break;
+
+                default:
+                  break;
+              }
+
+              this.startX = currentX;
+              this.startY = currentY;
+            });
+            break;
+
+          default:
+            break;
         }
       }
     };
