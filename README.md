@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ✨ Infinidraw
 
-## Getting Started
+<div align="center">
 
-First, run the development server:
+**An infinite canvas whiteboard for limitless creativity**
+
+A beautiful, collaborative whiteboard application that lets you draw, create, and collaborate in real-time on an endless canvas.
+
+[Features](#features) • [Demo](#demo) • [Installation](#installation) • [Usage](#usage) • [Contributing](#contributing)
+
+</div>
+
+---
+
+## 🎨 About
+
+Infinidraw is a modern, intuitive whiteboard application inspired by tools like Excalidraw. Built with Next.js, it provides a seamless drawing experience with real-time collaboration capabilities, allowing teams and individuals to visualize ideas, brainstorm, and create together without boundaries.
+
+Whether you're sketching wireframes, diagramming workflows, or brainstorming with your team, Infinidraw gives you the space and tools to bring your ideas to life.
+
+## ✨ Features
+
+- **🎯 Intuitive Drawing Tools** - Create and edit various shapes with ease
+- **🔄 Real-time Collaboration** - Work together with your team in real-time
+- **♾️ Infinite Canvas** - Zoom in and out freely without any limitations
+- **✏️ Shape Editing** - Modify, resize, and customize your drawings
+- **⚡ Lightning Fast** - Built with Next.js for optimal performance
+- **🎨 Clean Interface** - Distraction-free design that puts your work first
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed:
+- **Node.js** (version 16.x or higher)
+- **npm** (comes with Node.js)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/infinidraw.git
+   cd infinidraw
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   Edit `.env.local` with your configuration settings
+
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser**
+   
+   Navigate to [http://localhost:3000](http://localhost:3000) to see Infinidraw in action!
+
+### Building for Production
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Create an optimized production build
+npm run build
+
+# Start the production server
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎮 Usage
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Basic Controls
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Draw**: Select a shape tool and click-drag on the canvas
+- **Select**: Click on any shape to select and edit it
+- **Move**: Drag selected shapes to reposition them
+- **Zoom In/Out**: Use mouse wheel or pinch gestures to zoom
+- **Pan**: Hold spacebar and drag, or use middle mouse button
 
-## Learn More
+## 🛠️ Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Framework**: Next.js
+- **Language**: TypeScript/JavaScript
+- **Package Manager**: npm
+- **Styling**: CSS Modules / Tailwind CSS
+- **Real-time**: WebSockets / WebRTC
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🤝 Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-## Deploy on Vercel
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<div align="center">
+
+If you find this project useful, please consider giving it a ⭐️
+
+</div>
