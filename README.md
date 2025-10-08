@@ -39,7 +39,7 @@ Before you begin, ensure you have the following installed:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/infinidraw.git
+   git clone https://github.com/dakshydv/infinidraw.git
    cd infinidraw
    ```
 
