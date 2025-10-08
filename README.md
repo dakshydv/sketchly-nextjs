@@ -18,6 +18,8 @@ Infinidraw is a modern, intuitive whiteboard application inspired by tools like 
 
 Whether you're sketching wireframes, diagramming workflows, or brainstorming with your team, Infinidraw gives you the space and tools to bring your ideas to life.
 
+<img width="1469" height="703" alt="image" src="https://github.com/user-attachments/assets/fed81029-beef-4017-9d39-48fdc0d21151" />
+
 ## ✨ Features
 
 - **🎯 Intuitive Drawing Tools** - Create and edit various shapes with ease
