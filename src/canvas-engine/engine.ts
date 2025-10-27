@@ -168,8 +168,8 @@ export class Engine {
       this.ctx.font = "900 55px 'Caveat', cursive";
       this.ctx.fillStyle = this.canvasTheme === "dark" ? "#190064" : "#e1dfff";
       this.ctx.fillText(
-        "INFINIDRAW",
-        window.innerWidth / 2 - 160,
+        "SKETCHLY",
+        window.innerWidth / 2 - 120,
         window.innerHeight / 2
       );
 

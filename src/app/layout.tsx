@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Infinidraw",
+  title: "Sketchly",
   description: "Bring your ideas to life",
 };
 

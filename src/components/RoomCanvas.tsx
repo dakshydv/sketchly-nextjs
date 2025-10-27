@@ -188,7 +188,7 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
         ></canvas>
       ) : (
         <div className="bg-[#121212] w-screen h-screen text-white text-3xl">
-          Welcome to Infinidraw
+          Welcome to Sketchly
         </div>
       )}
       {showClearConfirm && (
@@ -610,7 +610,7 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
               icon={<IconBrandGithub size={17} />}
               heading="Github"
               theme={`bg-[#ffe59a] ${isThemeDark ? "hover:bg-[#ffe59a]" : "hover:bg-[#e0dfff]"} text-black`}
-              href="https://github.com/dakshydv/infinidraw"
+              href="https://github.com/dakshydv/sketchly"
             />
             <SocialLink
               icon={<IconBrandX size={17} />}

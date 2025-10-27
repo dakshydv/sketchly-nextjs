@@ -1,4 +1,4 @@
-# ✨ Infinidraw
+# ✨ Sketchly
 
 <div align="center">
 
@@ -14,9 +14,9 @@ A beautiful, collaborative whiteboard application that lets you draw, create, an
 
 ## 🎨 About
 
-Infinidraw is a modern, intuitive whiteboard application inspired by tools like Excalidraw. Built with Next.js, it provides a seamless drawing experience with real-time collaboration capabilities, allowing teams and individuals to visualize ideas, brainstorm, and create together without boundaries.
+Sketchly is a modern, intuitive whiteboard application inspired by tools like Excalidraw. Built with Next.js, it provides a seamless drawing experience with real-time collaboration capabilities, allowing teams and individuals to visualize ideas, brainstorm, and create together without boundaries.
 
-Whether you're sketching wireframes, diagramming workflows, or brainstorming with your team, Infinidraw gives you the space and tools to bring your ideas to life.
+Whether you're sketching wireframes, diagramming workflows, or brainstorming with your team, Sketchly gives you the space and tools to bring your ideas to life.
 
 <img width="1469" height="703" alt="image" src="https://github.com/user-attachments/assets/fed81029-beef-4017-9d39-48fdc0d21151" />
 
@@ -41,8 +41,8 @@ Before you begin, ensure you have the following installed:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/dakshydv/infinidraw.git
-   cd infinidraw
+   git clone https://github.com/dakshydv/sketchly.git
+   cd sketchly
    ```
 
 2. **Install dependencies**
@@ -63,7 +63,7 @@ Before you begin, ensure you have the following installed:
 
 5. **Open your browser**
    
-   Navigate to [http://localhost:3000](http://localhost:3000) to see Infinidraw in action!
+   Navigate to [http://localhost:3000](http://localhost:3000) to see Sketchly in action!
 
 ### Building for Production
 
