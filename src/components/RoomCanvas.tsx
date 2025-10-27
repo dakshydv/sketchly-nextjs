@@ -610,7 +610,7 @@ export function RoomCanvas({ roomId }: { roomId: number }) {
               icon={<IconBrandGithub size={17} />}
               heading="Github"
               theme={`bg-[#ffe59a] ${isThemeDark ? "hover:bg-[#ffe59a]" : "hover:bg-[#e0dfff]"} text-black`}
-              href="https://github.com/dakshydv/sketchly"
+              href="https://github.com/dakshydv/sketchly-nextjs"
             />
             <SocialLink
               icon={<IconBrandX size={17} />}
